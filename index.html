@@ -226,9 +226,8 @@
   #filter-status.active{display:block;}
 
 
-  /* bottom offset is re-measured at runtime to sit just above the scale bars —
-     see alignLegendAboveScaleBars(); this value is the pre-measure fallback */
-  #layers-ctrl{position:absolute;bottom:86px;left:12px;z-index:800;width:216px;transition:bottom .2s ease;}
+  /* Legend sits in the bottom-left corner of the map (see alignLegendAboveScaleBars()). */
+  #layers-ctrl{position:absolute;bottom:12px;left:12px;z-index:800;width:216px;}
   #legend-stack{max-height:min(430px,45vh);overflow-y:auto;}
   .layer-tabs{display:flex;border-bottom:1px solid var(--line);}
   .layer-tab{
@@ -294,6 +293,32 @@
   #layer-tree .lyr-child .sw.dash{border:1.5px dashed var(--slate-300);background:transparent;}
   #layer-tree .lyr-child .nm{flex:1;letter-spacing:0.3px;line-height:1.25;}
   #layer-tree input[type=checkbox]{accent-color:var(--amber-500);flex-shrink:0;cursor:pointer;}
+  /* ---- per-layer opacity: a percentage on the right of each row, click it for the slider ---- */
+  .op-btn{all:unset;box-sizing:border-box;flex-shrink:0;cursor:pointer;
+    min-width:36px;padding:1px 4px;text-align:right;border:1px solid var(--line);border-radius:2px;
+    font-family:'IBM Plex Mono',monospace;font-size:9px;line-height:13px;color:var(--slate-300);
+    transition:color .15s,border-color .15s,background .15s;}
+  .op-btn:hover{color:var(--white);border-color:rgba(255,255,255,0.28);}
+  .op-btn:focus-visible{outline:1px solid var(--amber-300);outline-offset:1px;}
+  .op-btn.dim{color:var(--amber-300);border-color:rgba(209,161,37,0.45);}
+  .op-btn.open{color:var(--amber-300);border-color:var(--amber-500);background:rgba(209,161,37,0.14);}
+  #layers-ctrl .op-btn{min-width:34px;}
+  #layers-ctrl .grp-head .op-btn{font-size:8.5px;line-height:12px;text-transform:none;letter-spacing:0;}
+  #op-pop{position:fixed;z-index:3000;width:208px;display:none;padding:8px 10px 9px;
+    background:rgba(9,18,26,0.97);border:1px solid var(--line);border-radius:4px;
+    box-shadow:0 8px 22px rgba(0,0,0,0.5);}
+  #op-pop.show{display:block;}
+  #op-pop .op-head{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;}
+  #op-pop .op-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:0.8px;text-transform:uppercase;color:var(--white);}
+  #op-pop .op-val{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--amber-300);flex-shrink:0;}
+  #op-pop input[type=range]{width:100%;margin:2px 0 7px;accent-color:var(--amber-500);cursor:pointer;}
+  #op-pop .op-presets{display:flex;gap:4px;}
+  #op-pop .op-presets button{all:unset;box-sizing:border-box;flex:1;cursor:pointer;text-align:center;
+    padding:2px 0;border:1px solid var(--line);border-radius:2px;
+    font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--slate-300);}
+  #op-pop .op-presets button:hover{color:var(--white);border-color:rgba(255,255,255,0.28);}
+  #op-pop .op-presets button.on{color:var(--navy-950);background:var(--amber-300);border-color:var(--amber-300);}
   .lyr-note{
     font-size:10.5px;color:var(--slate-300);font-style:italic;line-height:1.45;
     padding:2px 2px 4px;margin-bottom:9px;
@@ -1625,21 +1650,14 @@ L.control.scale({position:'bottomright', metric:true, imperial:false, maxWidth:1
 L.control.scale({position:'bottomright', metric:false, imperial:true, maxWidth:140}).addTo(map);
 
 /* ---------- LEGEND PLACEMENT ----------
-   Levels the bottom-left legend with the top of the scale-bar stack rather than
-   pinning it to the map floor. Measured at runtime so it stays correct whatever the
-   scale bars end up being (font loading, imperial vs metric label width, attribution
-   wrapping onto a second line on a narrow window). */
-const LEGEND_GAP_ABOVE_SCALE = 6;   // px of breathing room above the scale bars
+   The legend is pinned to the bottom-left corner of the map. The function keeps its old
+   name because the legend code still calls it after every change; it now just holds the
+   legend on the map floor instead of lifting it level with the scale bars. */
+const LEGEND_FLOOR = 12;   // px from the bottom edge of the map
 
 function alignLegendAboveScaleBars(){
   const legend = document.getElementById('layers-ctrl');
-  const mapEl = document.getElementById('map');
-  const scales = Array.prototype.slice.call(document.querySelectorAll('.leaflet-control-scale'));
-  if(!legend || !mapEl || !scales.length) return;
-  const mapBottom = mapEl.getBoundingClientRect().bottom;
-  const stackTop = Math.min.apply(null, scales.map(el=>el.getBoundingClientRect().top));
-  const offset = Math.round(mapBottom - stackTop) + LEGEND_GAP_ABOVE_SCALE;
-  if(offset > 0 && offset < mapEl.clientHeight * 0.5) legend.style.bottom = offset + 'px';
+  if(legend) legend.style.bottom = LEGEND_FLOOR + 'px';
 }
 
 map.whenReady(()=>{
@@ -3404,7 +3422,9 @@ L.Canvas.include({
     const p = layer._point, ctx = this._ctx, h = layer._radius;
     ctx.beginPath();
     ctx.moveTo(p.x, p.y - h); ctx.lineTo(p.x + h, p.y); ctx.lineTo(p.x, p.y + h); ctx.lineTo(p.x - h, p.y); ctx.closePath();
-    ctx.fillStyle = layer.options.fillColor; ctx.globalAlpha = 1; ctx.fill();
+    ctx.fillStyle = layer.options.fillColor;
+    ctx.globalAlpha = (layer._lyrOpacity == null) ? 1 : layer._lyrOpacity;   // per-layer opacity
+    ctx.fill();
     ctx.lineWidth = Math.max(0.8, h * 0.12); ctx.strokeStyle = '#1a1a1a'; ctx.lineJoin = 'round'; ctx.stroke();
     if(h >= 5){
       const k = h;
@@ -3420,6 +3440,7 @@ L.Canvas.include({
       ctx.moveTo(p.x - 0.30*k - 0.22*k, p.y - 0.30*k + 0.22*k); ctx.lineTo(p.x - 0.30*k + 0.22*k, p.y - 0.30*k - 0.22*k);
       ctx.stroke();
     }
+    ctx.globalAlpha = 1;
   }
 });
 const MineMarker = L.CircleMarker.extend({
@@ -3835,11 +3856,17 @@ const SWIPE_SOURCES = [];   // {id, group, label, make(side)}
     (function walk(l){
       if(l instanceof L.LayerGroup){ l.eachLayer(walk); return; }
       const o = Object.assign({}, l.options, {pane, renderer, interactive:false});
-      if(l instanceof MineMarker) out.addLayer(new MineMarker(l.getLatLng(), o));
-      else if(l instanceof L.CircleMarker) out.addLayer(L.circleMarker(l.getLatLng(), o));
-      else if(l instanceof L.Polygon) out.addLayer(L.polygon(l.getLatLngs(), o));
-      else if(l instanceof L.Polyline) out.addLayer(L.polyline(l.getLatLngs(), o));
-      else if(l instanceof L.Marker) out.addLayer(L.marker(l.getLatLng(), {icon:l.options.icon, pane, interactive:false, keyboard:false}));
+      let c = null;
+      if(l instanceof MineMarker) c = new MineMarker(l.getLatLng(), o);
+      else if(l instanceof L.CircleMarker) c = L.circleMarker(l.getLatLng(), o);
+      else if(l instanceof L.Polygon) c = L.polygon(l.getLatLngs(), o);
+      else if(l instanceof L.Polyline) c = L.polyline(l.getLatLngs(), o);
+      else if(l instanceof L.Marker) c = L.marker(l.getLatLng(), {icon:l.options.icon, pane, interactive:false, keyboard:false,
+                                                                   opacity:(l.options.opacity == null ? 1 : l.options.opacity)});
+      if(c){
+        if(l._lyrOpacity != null) c._lyrOpacity = l._lyrOpacity;   // the swipe copy keeps the layer's opacity
+        out.addLayer(c);
+      }
     })(src);
     return out;
   };
@@ -4121,12 +4148,14 @@ function sourceBox(attr, key){
     head.innerHTML = `<span class="caret">&#9660;</span>
                       <input type="checkbox" data-master="${group.id}"/>
                       <span class="nm">${group.title}</span>
-                      <span class="cnt" data-count="${group.id}"></span>`;
+                      <span class="cnt" data-count="${group.id}"></span>
+                      <button type="button" class="op-btn" data-op-group="${group.id}" data-op-master="1"
+                              title="Opacity for every layer in this group" aria-haspopup="dialog">100%</button>`;
     box.appendChild(head);
 
     /* The caret toggles the group open; the checkbox is its own hit area. */
     head.addEventListener('click', (e)=>{
-      if(e.target.matches('input')) return;
+      if(e.target.matches('input') || e.target.closest('.op-btn')) return;
       box.classList.toggle('collapsed');
     });
     head.querySelector('input').addEventListener('change', (e)=>{
@@ -4156,7 +4185,11 @@ function sourceBox(attr, key){
       r.innerHTML = `<input type="checkbox" data-mirror="${group.attr}" data-key="${it.key}"/>
                      ${it.swatchHtml || `<span class="${swClass}" style="${swStyle}"></span>`}
                      <span class="nm">${it.label}${it.sub ? `<span class="geo-date">${it.sub}</span>` : ''}</span>
-                     <span class="cnt">${it.note || it.count}</span>`;
+                     <span class="cnt">${it.note || it.count}</span>
+                     <button type="button" class="op-btn" title="Layer opacity" aria-haspopup="dialog">100%</button>`;
+      const opBtn = r.querySelector('.op-btn');
+      opBtn.dataset.opGroup = group.id;
+      opBtn.dataset.opKey = it.key;
       r.querySelector('input').addEventListener('change', (e)=>{
         const src = sourceBox(group.attr, it.key);
         if(src && src.checked !== e.target.checked){ src.checked = e.target.checked; src.dispatchEvent(new Event('change')); }
@@ -4168,6 +4201,233 @@ function sourceBox(attr, key){
     root.appendChild(box);
   });
 })();
+
+/* ---------- LAYER OPACITY (Map Layers tab) ----------
+   Each row carries its opacity as a percentage on the right; clicking it pops a slider.
+   Vector features keep their own styled opacities (claims highlight, flashes, shading), so
+   the setting is held separately on each feature as a multiplier and folded in at draw time
+   by both renderers. That way a later setStyle() never wipes it. Point markers use Leaflet's
+   own marker opacity. A group row sets every layer in its group at once. */
+(function(){
+  const _svgStyle = L.SVG.prototype._updateStyle;
+  L.SVG.prototype._updateStyle = function(layer){
+    const a = layer._lyrOpacity;
+    if(a == null || a === 1) return _svgStyle.call(this, layer);
+    const o = layer.options, so = o.opacity, sf = o.fillOpacity;
+    o.opacity = (so == null ? 1 : so) * a; o.fillOpacity = (sf == null ? 0.2 : sf) * a;
+    try { _svgStyle.call(this, layer); } finally { o.opacity = so; o.fillOpacity = sf; }
+  };
+  const _cvFill = L.Canvas.prototype._fillStroke;
+  L.Canvas.prototype._fillStroke = function(ctx, layer){
+    const a = layer._lyrOpacity;
+    if(a == null || a === 1) return _cvFill.call(this, ctx, layer);
+    const o = layer.options, so = o.opacity, sf = o.fillOpacity;
+    o.opacity = (so == null ? 1 : so) * a; o.fillOpacity = (sf == null ? 0.2 : sf) * a;
+    try { _cvFill.call(this, ctx, layer); } finally { o.opacity = so; o.fillOpacity = sf; }
+  };
+})();
+
+const layerOpacity = {};   // 'group|key' -> 0..100
+
+function opLayersFor(groupId, key){
+  const one = l => l ? [l] : [];
+  switch(groupId){
+    case 'claims': {
+      const out = one(claimLayers[key]);
+      const pt = otherSiteMarkers.find(o => o.name === key);
+      if(pt) out.push(pt.marker);
+      return out;
+    }
+    case 'aoi':    return one(aoiLayers[key]);
+    case 'geo':    return one(geoLayers[key]);
+    case 'mines':  return one(mineLayers[key]);
+    case 'env':    return one(envLayers[key]);
+    case 'public': return one(publicLayers[key]);
+  }
+  return [];
+}
+
+function opApplyTo(layer, a){
+  if(!layer) return;
+  if(layer instanceof L.LayerGroup){ layer.eachLayer(l => opApplyTo(l, a)); return; }
+  if(layer instanceof L.Marker){ layer.setOpacity(a); return; }
+  if(layer instanceof L.Path){
+    layer._lyrOpacity = a;
+    if(layer._map && layer._renderer){
+      if(layer._renderer instanceof L.SVG) layer._renderer._updateStyle(layer);
+      else layer.redraw();
+    }
+  }
+}
+
+function opGet(groupId, key){
+  const v = layerOpacity[groupId + '|' + key];
+  return v == null ? 100 : v;
+}
+
+function opGroupItems(groupId){
+  const g = LAYER_TREE_SPEC.find(x => x.id === groupId);
+  return g ? g.items : [];
+}
+
+/* Group value: the shared percentage, or null when its layers differ. */
+function opGroupValue(groupId){
+  const vals = opGroupItems(groupId).map(it => opGet(groupId, it.key));
+  if(!vals.length) return 100;
+  return vals.every(v => v === vals[0]) ? vals[0] : null;
+}
+
+function opPaintButtons(groupId){
+  document.querySelectorAll(`.op-btn[data-op-group="${groupId}"]`).forEach(btn=>{
+    const v = btn.dataset.opMaster ? opGroupValue(groupId) : opGet(groupId, btn.dataset.opKey);
+    btn.textContent = v == null ? 'Mix' : v + '%';
+    btn.classList.toggle('dim', v !== 100);
+  });
+}
+
+function opSet(groupId, key, pct){
+  pct = Math.max(0, Math.min(100, Math.round(pct)));
+  const keys = key == null ? opGroupItems(groupId).map(it => it.key) : [key];
+  keys.forEach(k=>{
+    layerOpacity[groupId + '|' + k] = pct;
+    opLayersFor(groupId, k).forEach(l => opApplyTo(l, pct / 100));
+  });
+  opPaintButtons(groupId);
+}
+
+/* ---- the pop-up slider (one shared instance, parked on <body> so the sidebar's
+   scrolling and overflow can never clip it) ---- */
+const opPop = document.createElement('div');
+opPop.id = 'op-pop';
+opPop.setAttribute('role', 'dialog');
+opPop.setAttribute('aria-label', 'Layer opacity');
+opPop.innerHTML = `<div class="op-head"><span class="op-name"></span><span class="op-val"></span></div>
+  <input type="range" min="0" max="100" step="1" aria-label="Opacity percentage"/>
+  <div class="op-presets">${[0, 25, 50, 75, 100].map(v => `<button type="button" data-v="${v}">${v}%</button>`).join('')}</div>`;
+document.body.appendChild(opPop);
+const opRange = opPop.querySelector('input');
+const opValEl = opPop.querySelector('.op-val');
+let opTarget = null;     // {btn, group, key}
+let opRaf = 0, opPending = null;
+
+function opShowValue(v){
+  opValEl.textContent = v == null ? 'Mixed' : v + '%';
+  opPop.querySelectorAll('.op-presets button').forEach(b => b.classList.toggle('on', +b.dataset.v === v));
+}
+
+function opPlace(){
+  if(!opTarget) return;
+  const r = opTarget.btn.getBoundingClientRect();
+  const w = opPop.offsetWidth, h = opPop.offsetHeight;
+  let left = Math.min(r.right - w, window.innerWidth - w - 8);
+  left = Math.max(8, left);
+  let top = r.bottom + 6;
+  if(top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 6);
+  opPop.style.left = left + 'px';
+  opPop.style.top = top + 'px';
+}
+
+function opOpen(btn){
+  if(opTarget && opTarget.btn === btn){ opClose(); return; }
+  opClose();
+  const group = btn.dataset.opGroup;
+  const key = btn.dataset.opMaster ? null : btn.dataset.opKey;
+  const spec = LAYER_TREE_SPEC.find(x => x.id === group);
+  const item = key == null ? null : opGroupItems(group).find(it => it.key === key);
+  opTarget = {btn, group, key};
+  opPop.querySelector('.op-name').textContent = item ? item.label : (spec ? spec.title + ' (all)' : '');
+  const v = key == null ? opGroupValue(group) : opGet(group, key);
+  if(v == null){
+    const vals = opGroupItems(group).map(it => opGet(group, it.key));
+    opRange.value = Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+  } else opRange.value = v;
+  opShowValue(v);
+  btn.classList.add('open');
+  btn.setAttribute('aria-expanded', 'true');
+  opPop.classList.add('show');
+  opPlace();
+  opRange.focus({preventScroll:true});
+}
+
+function opClose(){
+  if(!opTarget) return;
+  opTarget.btn.classList.remove('open');
+  opTarget.btn.setAttribute('aria-expanded', 'false');
+  opPop.classList.remove('show');
+  opTarget = null;
+}
+
+/* Redraws are batched to one per frame so dragging stays smooth on the big point layers. */
+function opQueue(pct){
+  if(!opTarget) return;
+  opPending = {group:opTarget.group, key:opTarget.key, pct};
+  opShowValue(pct);
+  if(opRaf) return;
+  opRaf = requestAnimationFrame(()=>{
+    opRaf = 0;
+    if(opPending){ opSet(opPending.group, opPending.key, opPending.pct); opPending = null; }
+  });
+}
+
+opRange.addEventListener('input', ()=> opQueue(parseInt(opRange.value, 10)));
+opPop.querySelectorAll('.op-presets button').forEach(b=>{
+  b.addEventListener('click', ()=>{ opRange.value = b.dataset.v; opQueue(+b.dataset.v); });
+});
+/* ---- the same opacity control in the legend ----
+   Each legend row (and each group header) gets its own percentage button. It reads and
+   writes the same setting as Map Layers, so the two always show the same value. The live
+   BLM services are not in Map Layers, so they get no control here either. */
+(function addLegendOpacity(){
+  const PANEL_TO_GROUP = {claims:'claims', hyperspectral:'aoi', geophysics:'geo',
+                          mines:'mines', environmental:'env', public:'public'};
+  const ATTR_OF = {claims:'site', aoi:'aoi', geo:'geo', mines:'mine', env:'env', public:'public'};
+  const makeBtn = (groupId, key)=>{
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'op-btn';
+    b.setAttribute('aria-haspopup', 'dialog');
+    b.dataset.opGroup = groupId;
+    if(key == null){ b.dataset.opMaster = '1'; b.title = 'Opacity for every layer in this group'; }
+    else { b.dataset.opKey = key; b.title = 'Layer opacity'; }
+    b.textContent = '100%';
+    /* The group header folds on click and on Enter/Space, so keep the button's own
+       clicks and keys from reaching it. */
+    b.addEventListener('click', e=>{ e.stopPropagation(); opOpen(b); });
+    b.addEventListener('keydown', e=>{ if(e.key === 'Enter' || e.key === ' ') e.stopPropagation(); });
+    return b;
+  };
+  Object.keys(PANEL_TO_GROUP).forEach(panelName=>{
+    const groupId = PANEL_TO_GROUP[panelName];
+    const panel = document.querySelector(`#layers-ctrl .layer-panel[data-panel="${panelName}"]`);
+    if(!panel) return;
+    const head = panel.querySelector('.grp-head');
+    if(head && !head.querySelector('.op-btn')) head.appendChild(makeBtn(groupId, null));
+    const attr = ATTR_OF[groupId];
+    const known = new Set(opGroupItems(groupId).map(it => it.key));
+    panel.querySelectorAll('.row').forEach(row=>{
+      const box = row.querySelector(`input[data-${attr}]`);
+      if(!box || row.querySelector('.op-btn')) return;
+      const key = box.getAttribute(`data-${attr}`);
+      if(known.has(key)) row.appendChild(makeBtn(groupId, key));
+    });
+    opPaintButtons(groupId);
+  });
+})();
+
+document.getElementById('layer-tree').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.op-btn');
+  if(!btn) return;
+  e.stopPropagation();
+  opOpen(btn);
+});
+document.addEventListener('pointerdown', (e)=>{
+  if(opTarget && !opPop.contains(e.target) && !e.target.closest('.op-btn')) opClose();
+});
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape' && opTarget){ const b = opTarget.btn; opClose(); b.focus(); }
+});
+window.addEventListener('resize', opClose);
+document.addEventListener('scroll', (e)=>{ if(opTarget && !opPop.contains(e.target)) opPlace(); }, true);
 
 /* Pulls the tree back in line with the legend — called after any change on either side,
    and after the basemap picker silently retunes the hyperspectral checkboxes. */
