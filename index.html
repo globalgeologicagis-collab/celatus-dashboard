@@ -304,6 +304,71 @@
   .op-btn.open{color:var(--amber-300);border-color:var(--amber-500);background:rgba(209,161,37,0.14);}
   #layers-ctrl .op-btn{min-width:34px;}
   #layers-ctrl .grp-head .op-btn{font-size:8.5px;line-height:12px;text-transform:none;letter-spacing:0;}
+  /* ---- Map Layers: Table button on group rows ---- */
+  #layer-tree .tbl-btn{all:unset;box-sizing:border-box;flex-shrink:0;cursor:pointer;
+    padding:1px 6px;border:1px solid rgba(209,161,37,0.45);border-radius:2px;
+    font-family:'Oswald',sans-serif;font-size:9px;letter-spacing:0.9px;line-height:13px;
+    text-transform:uppercase;color:var(--amber-300);transition:background .15s,color .15s;}
+  #layer-tree .tbl-btn:hover{background:rgba(209,161,37,0.14);color:var(--white);}
+  #layer-tree .tbl-btn:focus-visible{outline:1px solid var(--amber-300);outline-offset:1px;}
+  #layer-tree .tbl-btn.on{background:var(--amber-300);color:var(--navy-950);border-color:var(--amber-300);}
+
+  /* ===== TABLE VIEW (opens over the dashboard panel, which widens while it is open) ===== */
+  #tracker-wrap.tbl-open #tracker{width:min(720px, 54vw);min-width:min(720px, 54vw);}
+  #tbl-view{position:absolute;top:0;right:0;bottom:0;left:0;z-index:850;display:none;flex-direction:column;
+    background:linear-gradient(180deg,var(--navy-900) 0%, var(--navy-950) 100%);
+    border-left:2px solid var(--amber-500);font-size:11.5px;min-width:0;}
+  #tracker-wrap.tbl-open #tbl-view{display:flex;}
+  #tracker-wrap.tbl-open.collapsed #tbl-view{display:none;}
+  #tbl-view .tv-head{display:flex;align-items:flex-start;gap:10px;padding:10px 13px 8px;border-bottom:1px solid var(--line);}
+  #tbl-view .tv-id{flex:1;min-width:0;}
+  #tbl-view .tv-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--slate-300);
+    text-transform:uppercase;margin-bottom:2px;}
+  #tbl-view .tv-title{margin:0;font-family:'Oswald',sans-serif;font-weight:600;font-size:15px;letter-spacing:1px;
+    color:var(--white);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  #tbl-view .tv-exit{all:unset;box-sizing:border-box;cursor:pointer;flex-shrink:0;padding:5px 10px;border-radius:3px;
+    border:1px solid var(--amber-500);font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:1px;
+    text-transform:uppercase;color:var(--amber-300);}
+  #tbl-view .tv-exit:hover{background:var(--amber-300);color:var(--navy-950);}
+  #tbl-view .tv-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 13px;border-bottom:1px solid var(--line);}
+  #tbl-view select, #tbl-view input[type=text]{background:var(--navy-800);color:var(--white);border:1px solid var(--line);
+    border-radius:3px;padding:5px 7px;font-family:'Inter',sans-serif;font-size:11.5px;min-width:0;}
+  #tbl-view input[type=text]{flex:1 1 160px;}
+  #tbl-view input[type=text]::placeholder{color:var(--slate-300);}
+  #tbl-view .tv-btn{all:unset;box-sizing:border-box;cursor:pointer;padding:4px 9px;border-radius:3px;border:1px solid var(--line);
+    font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:0.8px;text-transform:uppercase;color:var(--sand-200);}
+  #tbl-view .tv-btn:hover:not(:disabled){border-color:rgba(255,255,255,0.3);color:var(--white);}
+  #tbl-view .tv-btn.primary{border-color:var(--amber-500);color:var(--amber-300);}
+  #tbl-view .tv-btn.primary:hover:not(:disabled){background:var(--amber-300);color:var(--navy-950);}
+  #tbl-view .tv-btn:disabled{opacity:0.4;cursor:default;}
+  #tbl-view .tv-status{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--slate-300);}
+  #tbl-view .tv-status b{color:var(--amber-300);font-weight:500;}
+  #tbl-view .tv-scroll{flex:1 1 auto;overflow:auto;min-height:0;}
+  #tbl-view table{border-collapse:collapse;width:100%;font-family:'IBM Plex Mono',monospace;font-size:10.5px;}
+  #tbl-view thead th{position:sticky;top:0;z-index:1;background:var(--navy-800);text-align:left;white-space:nowrap;
+    padding:6px 8px;font-family:'Oswald',sans-serif;font-weight:500;font-size:10px;letter-spacing:0.8px;
+    text-transform:uppercase;color:var(--sand-200);border-bottom:1px solid var(--line);cursor:pointer;user-select:none;}
+  #tbl-view thead th.nosort{cursor:default;}
+  #tbl-view thead th .ar{color:var(--amber-300);margin-left:3px;}
+  #tbl-view tbody td{padding:5px 8px;border-bottom:1px solid var(--line);color:var(--sand-200);white-space:nowrap;
+    max-width:260px;overflow:hidden;text-overflow:ellipsis;}
+  #tbl-view tbody tr{cursor:pointer;user-select:none;}
+  #tbl-view tbody tr:hover td{background:rgba(255,255,255,0.04);}
+  #tbl-view tbody tr.sel td{background:rgba(209,161,37,0.16);color:var(--white);}
+  #tbl-view input[type=checkbox]{accent-color:var(--amber-500);cursor:pointer;margin:0;}
+  #tbl-view td.c-chk, #tbl-view th.c-chk{width:22px;padding-right:2px;}
+  #tbl-view td.c-zoom{width:22px;padding:2px 4px;}
+  #tbl-view .z-btn{all:unset;cursor:pointer;display:inline-flex;width:18px;height:18px;align-items:center;justify-content:center;
+    border-radius:2px;color:var(--slate-300);}
+  #tbl-view .z-btn:hover{color:var(--amber-300);background:rgba(209,161,37,0.14);}
+  #tbl-view .z-btn svg{width:13px;height:13px;}
+  #tbl-view .sw{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:-1px;}
+  #tbl-view .tv-empty{padding:18px 14px;color:var(--slate-300);font-style:italic;}
+  #tbl-view .tv-foot{display:flex;align-items:center;gap:6px;padding:7px 13px;border-top:1px solid var(--line);
+    font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--slate-300);}
+  #tbl-view .tv-foot .sp{flex:1;}
+  #tbl-view .tv-hint{font-size:9.5px;color:var(--slate-500);}
+
   #op-pop{position:fixed;z-index:3000;width:208px;display:none;padding:8px 10px 9px;
     background:rgba(9,18,26,0.97);border:1px solid var(--line);border-radius:4px;
     box-shadow:0 8px 22px rgba(0,0,0,0.5);}
@@ -4130,6 +4195,9 @@ const LAYER_TREE_SPEC = [
   }
 ];
 
+/* Groups that offer a Table view from their Map Layers row. */
+const TABLE_GROUPS = new Set(['claims', 'geo', 'mines', 'env', 'public']);
+
 function sourceBox(attr, key){
   return document.querySelector(`input[data-${attr}="${CSS.escape(key)}"]`);
 }
@@ -4149,13 +4217,14 @@ function sourceBox(attr, key){
                       <input type="checkbox" data-master="${group.id}"/>
                       <span class="nm">${group.title}</span>
                       <span class="cnt" data-count="${group.id}"></span>
-                      <button type="button" class="op-btn" data-op-group="${group.id}" data-op-master="1"
-                              title="Opacity for every layer in this group" aria-haspopup="dialog">100%</button>`;
+                      ${TABLE_GROUPS.has(group.id)
+                        ? `<button type="button" class="tbl-btn" data-tbl="${group.id}" title="Open the attribute table for ${group.title}">Table</button>`
+                        : ''}`;
     box.appendChild(head);
 
     /* The caret toggles the group open; the checkbox is its own hit area. */
     head.addEventListener('click', (e)=>{
-      if(e.target.matches('input') || e.target.closest('.op-btn')) return;
+      if(e.target.matches('input') || e.target.closest('.tbl-btn')) return;
       box.classList.toggle('collapsed');
     });
     head.querySelector('input').addEventListener('change', (e)=>{
@@ -4185,11 +4254,7 @@ function sourceBox(attr, key){
       r.innerHTML = `<input type="checkbox" data-mirror="${group.attr}" data-key="${it.key}"/>
                      ${it.swatchHtml || `<span class="${swClass}" style="${swStyle}"></span>`}
                      <span class="nm">${it.label}${it.sub ? `<span class="geo-date">${it.sub}</span>` : ''}</span>
-                     <span class="cnt">${it.note || it.count}</span>
-                     <button type="button" class="op-btn" title="Layer opacity" aria-haspopup="dialog">100%</button>`;
-      const opBtn = r.querySelector('.op-btn');
-      opBtn.dataset.opGroup = group.id;
-      opBtn.dataset.opKey = it.key;
+                     <span class="cnt">${it.note || it.count}</span>`;
       r.querySelector('input').addEventListener('change', (e)=>{
         const src = sourceBox(group.attr, it.key);
         if(src && src.checked !== e.target.checked){ src.checked = e.target.checked; src.dispatchEvent(new Event('change')); }
@@ -4202,8 +4267,8 @@ function sourceBox(attr, key){
   });
 })();
 
-/* ---------- LAYER OPACITY (Map Layers tab) ----------
-   Each row carries its opacity as a percentage on the right; clicking it pops a slider.
+/* ---------- LAYER OPACITY (legend) ----------
+   Each legend row carries its opacity as a percentage on the right; clicking it pops a slider.
    Vector features keep their own styled opacities (claims highlight, flashes, shading), so
    the setting is held separately on each feature as a multiplier and folded in at draw time
    by both renderers. That way a later setStyle() never wipes it. Point markers use Leaflet's
@@ -4414,12 +4479,6 @@ opPop.querySelectorAll('.op-presets button').forEach(b=>{
   });
 })();
 
-document.getElementById('layer-tree').addEventListener('click', (e)=>{
-  const btn = e.target.closest('.op-btn');
-  if(!btn) return;
-  e.stopPropagation();
-  opOpen(btn);
-});
 document.addEventListener('pointerdown', (e)=>{
   if(opTarget && !opPop.contains(e.target) && !e.target.closest('.op-btn')) opClose();
 });
@@ -4428,6 +4487,360 @@ document.addEventListener('keydown', (e)=>{
 });
 window.addEventListener('resize', opClose);
 document.addEventListener('scroll', (e)=>{ if(opTarget && !opPop.contains(e.target)) opPlace(); }, true);
+
+/* ---------- TABLE VIEW ----------
+   A Table button on the Claims, Geophysics, Historical Mines, Environmental and Public Lands
+   rows of Map Layers opens that group's features as a table over the dashboard panel.
+   Rows can be filtered, sorted and selected; selected features are outlined on the map and
+   can be zoomed to. Zooming to a feature switches its layer on if it is off. */
+(function(){
+  const wrap = document.getElementById('tracker-wrap');
+  if(!wrap) return;
+
+  const esc = v => String(v == null ? '' : v).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const plain = v => String(v == null ? '' : v).replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, '').trim();
+  const acres = v => (v == null || v === '') ? '' : Number(v).toLocaleString(undefined, {maximumFractionDigits:1});
+  const walkLeaves = (layer, fn) => {
+    if(!layer) return;
+    if(layer instanceof L.LayerGroup) layer.eachLayer(l => walkLeaves(l, fn));
+    else fn(layer);
+  };
+  const spec = id => LAYER_TREE_SPEC.find(g => g.id === id);
+  const itemLabel = (gid, key) => { const it = (spec(gid) || {items:[]}).items.find(i => i.key === key); return it ? it.label : key; };
+  const itemColor = (gid, key) => { const it = (spec(gid) || {items:[]}).items.find(i => i.key === key); return it ? it.color : '#888'; };
+
+  /* Per group: the columns, and how to read each feature into a row. Every row keeps its
+     sub-layer key (for the filter and for switching the layer on) and its Leaflet leaf. */
+  const DEFS = {
+    claims: {
+      title:'Claims', itemCol:'Site', attr:'site',
+      cols:['Claim', 'Status', 'Type', 'BLM Serial', 'County', 'Located', 'Twn / Rng / Sec'],
+      rows(){
+        const out = [];
+        Object.keys(claimLayers).forEach(site => walkLeaves(claimLayers[site], l=>{
+          const p = (l.feature && l.feature.properties) || {};
+          out.push({key:site, leaf:l, cells:[p.Claim_Name || p.Label || p.Claim_No || p.Claim_no || '', p.STATUS || '',
+            p.Claim_Type || '', p.BLM_Serial || '', p.County || '', p.Loc_Date || '', p.Twn_Rng_Sc || '']});
+        }));
+        return out;
+      }
+    },
+    geo: {
+      title:'Geophysics: Targets Over Time', itemCol:'Layer', attr:'geo',
+      cols:['Name', 'Date', 'State', 'Geometry', 'Details'],
+      rows(){
+        const out = [];
+        GEO_GROUPS.forEach(g => walkLeaves(geoLayers[g.key], l=>{
+          const p = (l.feature && l.feature.properties) || {};
+          const det = Object.entries(p.a || {}).map(([k, v]) => `${k}: ${plain(v)}`).join('; ');
+          const geom = l instanceof L.CircleMarker ? 'Point' : l instanceof L.Polygon ? 'Polygon' : 'Line';
+          out.push({key:g.key, leaf:l, cells:[plain(p.nm), g.date || '', p.st || '', geom, det]});
+        }));
+        return out;
+      }
+    },
+    mines: {
+      title:'Historical Mines (USGS MRDS)', itemCol:'Status', attr:'mine',
+      cols:['Site Name', 'Commodity', 'Ore', 'Size', 'County', 'State', 'MRDS ID'],
+      rows(){
+        return mineMarkers.map(({mk, m, st}) => ({key:st.key, leaf:mk,
+          cells:[m.site_name || '', m.commod1 || '', m.ore || '', m.prod_size || '', m.county || '', m.state || '', m.mrds_id || '']}));
+      }
+    },
+    env: {
+      title:'Environmental', itemCol:'Layer', attr:'env',
+      cols:['Name', 'State', 'Acres', 'ID', 'Plan / Type', 'Date'],
+      rows(){
+        const out = [];
+        ENV_GROUPS.forEach(g => walkLeaves(envLayers[g.key], l=>{
+          const p = (l.feature && l.feature.properties) || {};
+          out.push({key:g.key, leaf:l, num:{2:+p.acres || 0},
+            cells:[p.name || '', p.st || '', acres(p.acres), p.id == null ? '' : p.id, p.plan || p.wtype || '', p.date || '']});
+        }));
+        return out;
+      }
+    },
+    public: {
+      title:'Public Lands', itemCol:'Agency', attr:'public',
+      cols:['Unit ID', 'State', 'Acres'],
+      rows(){
+        const out = [];
+        PUBLIC_GROUPS.forEach(g => walkLeaves(publicLayers[g.key], l=>{
+          const p = (l.feature && l.feature.properties) || {};
+          out.push({key:g.key, leaf:l, num:{0:+p.id || 0, 2:+p.acres || 0}, cells:[p.id == null ? '' : p.id, p.st || '', acres(p.acres)]});
+        }));
+        return out;
+      }
+    }
+  };
+
+  /* ---- markup ---- */
+  const view = document.createElement('div');
+  view.id = 'tbl-view';
+  view.setAttribute('role', 'region');
+  view.setAttribute('aria-label', 'Table view');
+  view.innerHTML = `
+    <div class="tv-head">
+      <div class="tv-id"><div class="tv-eyebrow">Table View</div><h2 class="tv-title"></h2></div>
+      <button type="button" class="tv-exit" title="Exit table view (Esc)">&times; Exit Table</button>
+    </div>
+    <div class="tv-bar">
+      <select class="tv-layer" aria-label="Filter by layer"></select>
+      <input type="text" class="tv-search" placeholder="Search this table&hellip;" autocomplete="off" aria-label="Search this table"/>
+    </div>
+    <div class="tv-bar">
+      <button type="button" class="tv-btn primary tv-zoom">Zoom to Selected</button>
+      <button type="button" class="tv-btn tv-selall">Select All Results</button>
+      <button type="button" class="tv-btn tv-clear">Clear Selection</button>
+      <span class="tv-status"></span>
+    </div>
+    <div class="tv-scroll"><table><thead></thead><tbody></tbody></table><div class="tv-empty" hidden>No features match.</div></div>
+    <div class="tv-foot">
+      <span class="tv-hint">Click a row to select it, Ctrl/Shift+click to add more, double-click to zoom.</span>
+      <span class="sp"></span>
+      <button type="button" class="tv-btn tv-prev">&#9664; Prev</button>
+      <span class="tv-page"></span>
+      <button type="button" class="tv-btn tv-next">Next &#9654;</button>
+    </div>`;
+  wrap.appendChild(view);
+  const $ = sel => view.querySelector(sel);
+  const thead = $('thead'), tbody = $('tbody');
+
+  const ZOOM_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M10.5 7.5v6M7.5 10.5h6"/></svg>';
+  const PAGE = 100;
+
+  /* ---- selection highlight on the map ---- */
+  map.createPane('tblSelPane');
+  map.getPane('tblSelPane').style.zIndex = 645;
+  map.getPane('tblSelPane').style.pointerEvents = 'none';
+  const selRenderer = L.canvas({pane:'tblSelPane', padding:0.3});
+  const selLayer = L.layerGroup().addTo(map);
+  const HL = {pane:'tblSelPane', renderer:selRenderer, interactive:false, color:'#ffe066', weight:3, opacity:1,
+              fillColor:'#ffd23f', fillOpacity:0.18};
+  function hlFor(leaf){
+    if(leaf instanceof L.CircleMarker) return L.circleMarker(leaf.getLatLng(), Object.assign({}, HL, {radius:10, fillOpacity:0.1}));
+    if(leaf instanceof L.Polygon) return L.polygon(leaf.getLatLngs(), HL);
+    if(leaf instanceof L.Polyline) return L.polyline(leaf.getLatLngs(), HL);
+    if(leaf.getLatLng) return L.circleMarker(leaf.getLatLng(), Object.assign({}, HL, {radius:10, fillOpacity:0.1}));
+    return null;
+  }
+
+  /* ---- state ---- */
+  let gid = null, def = null, all = [], shown = [], page = 0, sortCol = null, sortDir = 1, lastIdx = null;
+  const sel = new Set();       // row objects
+  const cache = {};
+
+  function rowsFor(id){
+    if(!cache[id]) cache[id] = DEFS[id].rows().map((r, i) => Object.assign(r, {
+      id:i, label:itemLabel(id, r.key),
+      text:(itemLabel(id, r.key) + ' ' + r.cells.join(' ')).toLowerCase()
+    }));
+    return cache[id];
+  }
+
+  function cellValue(r, c){   // c = -1 is the sub-layer column
+    if(c < 0) return r.label;
+    if(r.num && c in r.num) return r.num[c];
+    return r.cells[c];
+  }
+
+  function applyFilter(){
+    const layer = $('.tv-layer').value, q = $('.tv-search').value.trim().toLowerCase();
+    shown = all.filter(r => (!layer || r.key === layer) && (!q || r.text.includes(q)));
+    if(sortCol !== null){
+      shown.sort((a, b)=>{
+        const x = cellValue(a, sortCol), y = cellValue(b, sortCol);
+        if(typeof x === 'number' && typeof y === 'number') return (x - y) * sortDir;
+        return String(x).localeCompare(String(y), undefined, {numeric:true, sensitivity:'base'}) * sortDir;
+      });
+    }
+    page = 0; lastIdx = null;
+    render();
+  }
+
+  function renderHead(){
+    const cols = [def.itemCol].concat(def.cols);
+    thead.innerHTML = `<tr><th class="c-chk nosort"><input type="checkbox" class="tv-pagechk" title="Select this page"/></th>
+      <th class="nosort"></th>` + cols.map((c, i) => {
+        const ci = i - 1;
+        const ar = sortCol === ci ? `<span class="ar">${sortDir > 0 ? '&#9650;' : '&#9660;'}</span>` : '';
+        return `<th data-col="${ci}">${esc(c)}${ar}</th>`;
+      }).join('') + '</tr>';
+  }
+
+  function render(){
+    renderHead();
+    const pages = Math.max(1, Math.ceil(shown.length / PAGE));
+    page = Math.min(page, pages - 1);
+    const slice = shown.slice(page * PAGE, page * PAGE + PAGE);
+    tbody.innerHTML = slice.map((r, i) => `<tr data-i="${page * PAGE + i}" class="${sel.has(r) ? 'sel' : ''}">
+        <td class="c-chk"><input type="checkbox" ${sel.has(r) ? 'checked' : ''} aria-label="Select row"/></td>
+        <td class="c-zoom"><button type="button" class="z-btn" title="Zoom to this feature">${ZOOM_SVG}</button></td>
+        <td><span class="sw" style="background:${itemColor(gid, r.key)}"></span>${esc(r.label)}</td>
+        ${r.cells.map(c => `<td title="${esc(c)}">${esc(c)}</td>`).join('')}
+      </tr>`).join('');
+    $('.tv-empty').hidden = shown.length > 0;
+    const pc = $('.tv-pagechk');
+    const onPage = slice.filter(r => sel.has(r)).length;
+    pc.checked = slice.length > 0 && onPage === slice.length;
+    pc.indeterminate = onPage > 0 && onPage < slice.length;
+    $('.tv-page').textContent = shown.length
+      ? `${(page * PAGE + 1).toLocaleString()}\u2013${Math.min(shown.length, (page + 1) * PAGE).toLocaleString()} of ${shown.length.toLocaleString()}`
+      : '0 of 0';
+    $('.tv-prev').disabled = page === 0;
+    $('.tv-next').disabled = page >= pages - 1;
+    updateStatus();
+  }
+
+  function updateStatus(){
+    $('.tv-status').innerHTML = `${shown.length.toLocaleString()} of ${all.length.toLocaleString()} features &middot; <b>${sel.size.toLocaleString()}</b> selected`;
+    $('.tv-zoom').disabled = sel.size === 0;
+    $('.tv-clear').disabled = sel.size === 0;
+  }
+
+  function drawSelection(){
+    selLayer.clearLayers();
+    sel.forEach(r => { const h = hlFor(r.leaf); if(h) selLayer.addLayer(h); });
+  }
+
+  function selectionChanged(){
+    drawSelection();
+    tbody.querySelectorAll('tr').forEach(tr=>{
+      const r = shown[+tr.dataset.i]; const on = sel.has(r);
+      tr.classList.toggle('sel', on);
+      tr.querySelector('input').checked = on;
+    });
+    const slice = shown.slice(page * PAGE, page * PAGE + PAGE);
+    const onPage = slice.filter(r => sel.has(r)).length, pc = $('.tv-pagechk');
+    if(pc){ pc.checked = slice.length > 0 && onPage === slice.length; pc.indeterminate = onPage > 0 && onPage < slice.length; }
+    updateStatus();
+  }
+
+  /* Switch on the sub-layers of these rows so the zoomed-to features are actually drawn. */
+  function ensureOn(rows){
+    let changed = false;
+    new Set(rows.map(r => r.key)).forEach(k=>{
+      const box = sourceBox(def.attr, k);
+      if(box && !box.checked){ box.checked = true; box.dispatchEvent(new Event('change')); changed = true; }
+    });
+    if(changed) syncLayerTree();
+  }
+
+  function zoomTo(rows){
+    if(!rows.length) return;
+    ensureOn(rows);
+    let b = null;
+    rows.forEach(r=>{
+      const l = r.leaf;
+      const lb = l.getBounds ? l.getBounds() : (l.getLatLng ? L.latLngBounds([l.getLatLng(), l.getLatLng()]) : null);
+      if(lb && lb.isValid()) b = b ? b.extend(lb) : L.latLngBounds(lb.getSouthWest(), lb.getNorthEast());
+    });
+    if(!b) return;
+    const pt = b.getSouthWest().equals(b.getNorthEast());
+    if(pt) map.setView(b.getCenter(), Math.max(map.getZoom(), 14));
+    else map.fitBounds(b, {padding:[60, 60], maxZoom:15});
+  }
+
+  /* ---- open / close ---- */
+  function open(id){
+    if(!DEFS[id]) return;
+    if(gid === id){ close(); return; }
+    gid = id; def = DEFS[id];
+    all = rowsFor(id); sel.clear(); sortCol = null; sortDir = 1;
+    $('.tv-title').textContent = def.title;
+    const items = (spec(id) || {items:[]}).items.filter(it => all.some(r => r.key === it.key));
+    $('.tv-layer').innerHTML = `<option value="">All ${esc(def.itemCol === 'Layer' ? 'layers' : def.itemCol.toLowerCase() + 's')}</option>` +
+      items.map(it => `<option value="${esc(it.key)}">${esc(it.label)}</option>`).join('');
+    $('.tv-search').value = '';
+    document.querySelectorAll('#layer-tree .tbl-btn').forEach(b => b.classList.toggle('on', b.dataset.tbl === id));
+    if(wrap.classList.contains('collapsed')) document.getElementById('tracker-toggle').click();
+    const wasOpen = wrap.classList.contains('tbl-open');
+    wrap.classList.add('tbl-open');
+    if(!wasOpen) setTimeout(()=> map.invalidateSize(), 320);
+    applyFilter();
+    drawSelection();
+    $('.tv-scroll').scrollTop = 0;
+    $('.tv-search').focus({preventScroll:true});
+  }
+
+  function close(){
+    if(!gid) return;
+    gid = null; def = null; sel.clear(); selLayer.clearLayers();
+    wrap.classList.remove('tbl-open');
+    document.querySelectorAll('#layer-tree .tbl-btn').forEach(b => b.classList.remove('on'));
+    setTimeout(()=> map.invalidateSize(), 320);
+  }
+  window.openTableView = open;
+  window.closeTableView = close;
+
+  /* ---- events ---- */
+  document.getElementById('layer-tree').addEventListener('click', e=>{
+    const b = e.target.closest('.tbl-btn');
+    if(!b) return;
+    e.stopPropagation();
+    open(b.dataset.tbl);
+  });
+  $('.tv-exit').addEventListener('click', close);
+  /* Capture phase, so this sees the slider state before its own Esc handler closes it. */
+  window.addEventListener('keydown', e=>{
+    if(e.key !== 'Escape' || !gid) return;
+    if(document.getElementById('op-pop').classList.contains('show')) return;   // Esc closes the slider first
+    close();
+  }, true);
+  $('.tv-layer').addEventListener('change', applyFilter);
+  let qT = 0;
+  $('.tv-search').addEventListener('input', ()=>{ clearTimeout(qT); qT = setTimeout(applyFilter, 150); });
+  $('.tv-prev').addEventListener('click', ()=>{ page--; render(); $('.tv-scroll').scrollTop = 0; });
+  $('.tv-next').addEventListener('click', ()=>{ page++; render(); $('.tv-scroll').scrollTop = 0; });
+  $('.tv-zoom').addEventListener('click', ()=> zoomTo([...sel]));
+  $('.tv-clear').addEventListener('click', ()=>{ sel.clear(); selectionChanged(); });
+  $('.tv-selall').addEventListener('click', ()=>{ shown.forEach(r => sel.add(r)); selectionChanged(); });
+
+  thead.addEventListener('click', e=>{
+    if(e.target.matches('.tv-pagechk')){
+      const slice = shown.slice(page * PAGE, page * PAGE + PAGE);
+      slice.forEach(r => e.target.checked ? sel.add(r) : sel.delete(r));
+      selectionChanged();
+      return;
+    }
+    const th = e.target.closest('th[data-col]');
+    if(!th) return;
+    const c = +th.dataset.col;
+    if(sortCol === c) sortDir = -sortDir; else { sortCol = c; sortDir = 1; }
+    applyFilter();
+  });
+
+  tbody.addEventListener('click', e=>{
+    const tr = e.target.closest('tr');
+    if(!tr) return;
+    const i = +tr.dataset.i, r = shown[i];
+    if(e.target.closest('.z-btn')){
+      if(!sel.has(r)){ sel.clear(); sel.add(r); selectionChanged(); }
+      zoomTo([r]);
+      return;
+    }
+    if(e.target.matches('input[type=checkbox]')){
+      e.target.checked ? sel.add(r) : sel.delete(r);
+      lastIdx = i; selectionChanged();
+      return;
+    }
+    if(e.shiftKey && lastIdx !== null){
+      const [a, b] = lastIdx < i ? [lastIdx, i] : [i, lastIdx];
+      for(let k = a; k <= b; k++) sel.add(shown[k]);
+    } else if(e.ctrlKey || e.metaKey){
+      sel.has(r) ? sel.delete(r) : sel.add(r);
+      lastIdx = i;
+    } else {
+      sel.clear(); sel.add(r); lastIdx = i;
+    }
+    selectionChanged();
+  });
+  tbody.addEventListener('dblclick', e=>{
+    const tr = e.target.closest('tr');
+    if(!tr || e.target.closest('input, .z-btn')) return;
+    zoomTo([shown[+tr.dataset.i]]);
+  });
+})();
 
 /* Pulls the tree back in line with the legend — called after any change on either side,
    and after the basemap picker silently retunes the hyperspectral checkboxes. */
