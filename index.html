@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>CELATUS MINERALS PTY LTD — Projects v2.2</title>
+<title>CELATUS MINERALS PTY LTD — Projects v2.3</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -189,6 +189,32 @@
   #hyper-sub .hs-note{
     font-family:'Inter',sans-serif;font-size:10px;line-height:1.45;color:var(--slate-500);
   }
+  /* v2.3: Imagery Overlays: geophysics and hyperspectral grids over any basemap, each with its own opacity */
+  #img-ovl{margin-top:6px;padding:9px 10px 10px;background:rgba(255,255,255,0.03);border:1px solid var(--line);border-radius:3px;
+    display:flex;flex-direction:column;gap:7px;min-width:0;}
+  #img-ovl .ov-title{font-family:'Oswald',sans-serif;font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--amber-300);}
+  #img-ovl .ov-grp{font-family:'Oswald',sans-serif;font-size:8.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--slate-300);
+    margin-top:3px;padding-top:6px;border-top:1px solid var(--line);}
+  #img-ovl .ov-row{display:flex;flex-direction:column;gap:5px;}
+  #img-ovl .ov-top{display:flex;align-items:center;gap:7px;}
+  #img-ovl .ov-top label{flex:1;display:flex;align-items:center;gap:7px;cursor:pointer;font-family:'Inter',sans-serif;font-size:11.5px;color:var(--slate-300);min-width:0;}
+  #img-ovl .ov-top label:hover{color:var(--white);}
+  #img-ovl .ov-row.on .ov-top label{color:var(--white);}
+  #img-ovl input[type=checkbox]{accent-color:var(--amber-500);cursor:pointer;margin:0;}
+  #img-ovl .ov-zoom{background:none;border:1px solid var(--line);border-radius:2px;color:var(--slate-300);font-family:'Inter',sans-serif;
+    font-size:10px;padding:2px 6px;cursor:pointer;white-space:nowrap;}
+  #img-ovl .ov-zoom:hover{color:var(--white);border-color:var(--slate-500);}
+  #img-ovl .ov-ctl{display:none;flex-direction:column;gap:4px;padding-left:20px;}
+  #img-ovl .ov-row.on .ov-ctl{display:flex;}
+  #img-ovl .ov-slider{display:flex;align-items:center;gap:8px;}
+  #img-ovl .ov-slider span.k{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--slate-300);text-transform:uppercase;letter-spacing:0.6px;}
+  #img-ovl input[type=range]{flex:1;min-width:0;accent-color:var(--amber-500);cursor:pointer;margin:0;}
+  #img-ovl .ov-val{font-family:'Oswald',sans-serif;font-size:11px;color:var(--white);min-width:32px;text-align:right;font-variant-numeric:tabular-nums;}
+  #img-ovl .ov-ramp{height:8px;border-radius:2px;border:1px solid rgba(0,0,0,0.45);}
+  #img-ovl .ov-ends{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:8.5px;color:var(--slate-500);text-transform:uppercase;}
+  #img-ovl .ov-check{display:flex;align-items:center;gap:7px;cursor:pointer;font-family:'Inter',sans-serif;font-size:11px;color:var(--slate-300);
+    margin-top:2px;padding-top:6px;border-top:1px solid var(--line);}
+  #img-ovl .ov-note{font-family:'Inter',sans-serif;font-size:10px;line-height:1.45;color:var(--slate-500);}
   /* colour ramp for the geophysics grids (hidden for the hyperspectral surveys) */
   #hs-ramp{display:flex;flex-direction:column;gap:4px;padding-top:8px;border-top:1px solid var(--line);}
   #hs-ramp[hidden]{display:none;}
@@ -815,13 +841,32 @@
     text-transform:uppercase;padding:5px 0;cursor:pointer;}
   #fp-nav button:hover:not(:disabled){color:var(--white);border-color:var(--slate-500);}
   #fp-nav button:disabled{opacity:0.4;cursor:default;}
-  #fp-viewer{flex:1 1 auto;min-height:280px;display:flex;align-items:center;justify-content:center;
-    background:#05080d;border:1px solid var(--line);border-radius:4px;overflow:hidden;position:relative;}
-  #fp-viewer img{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;display:none;}
-  #fp-viewer.has-photo img{display:block;}
-  #fp-viewer .fp-empty{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.8px;
+  /* v2.3: the viewer area now holds thumbnails of the next 20 photos; the photo itself opens on its point */
+  #fp-viewer{flex:1 1 auto;min-height:280px;display:flex;flex-direction:column;gap:6px;
+    background:#05080d;border:1px solid var(--line);border-radius:4px;overflow:hidden;position:relative;padding:7px;box-sizing:border-box;}
+  #fp-viewer .fp-thumbs-title{display:none;font-family:'Oswald',sans-serif;font-size:9.5px;letter-spacing:1.1px;text-transform:uppercase;color:var(--slate-300);}
+  #fp-viewer.has-photo .fp-thumbs-title{display:block;}
+  #fp-thumbs{flex:1 1 auto;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill, minmax(64px, 1fr));gap:5px;align-content:start;}
+  #fp-thumbs .fp-th{position:relative;padding:0;border:1px solid var(--line);border-radius:2px;background:#0b1018;cursor:pointer;aspect-ratio:4 / 3;overflow:hidden;}
+  #fp-thumbs .fp-th img{width:100%;height:100%;object-fit:cover;display:block;}
+  #fp-thumbs .fp-th span{position:absolute;left:2px;bottom:2px;font-family:'IBM Plex Mono',monospace;font-size:8.5px;color:#fff;
+    background:rgba(0,0,0,0.6);padding:0 3px;border-radius:2px;}
+  #fp-thumbs .fp-th:hover, #fp-thumbs .fp-th:focus-visible{border-color:var(--amber-500);outline:none;}
+  #fp-viewer .fp-empty{margin:auto;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.8px;
     color:var(--slate-500);text-transform:uppercase;text-align:center;padding:0 18px;line-height:1.6;}
   #fp-viewer.has-photo .fp-empty{display:none;}
+  /* photo popup on the point (2D and 3D): the stored 256 px photo shown at twice the size, same file */
+  .photo-card .pc-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px;padding-right:18px;}
+  .photo-card .pc-head .popup-title{margin:0;}
+  .photo-card .pc-idx{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--slate-300);white-space:nowrap;}
+  .photo-card .pc-img{display:block;height:auto;max-width:min(100%, 72vw);max-height:62vh;object-fit:contain;border-radius:2px;background:#05080d;image-rendering:auto;}
+  .photo-card .pc-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px;}
+  .photo-card .pc-meta{font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--slate-300);text-align:center;}
+  .photo-card .pc-foot button{background:rgba(255,255,255,0.04);border:1px solid var(--line);border-radius:3px;color:var(--slate-300);
+    font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:0.6px;text-transform:uppercase;padding:4px 9px;cursor:pointer;white-space:nowrap;}
+  .photo-card .pc-foot button:hover:not(:disabled){color:var(--white);border-color:var(--slate-500);}
+  .photo-card .pc-foot button:disabled{opacity:0.4;cursor:default;}
+  .photo-popup .leaflet-popup-content{width:auto !important;max-width:none !important;max-height:none !important;overflow:visible !important;}
   .fp-tip{font-family:'IBM Plex Mono',monospace!important;font-size:10px!important;}
 
   #tracker .scope-note{
@@ -1025,6 +1070,122 @@
     border-radius:2px;color:var(--white);font-family:'Inter',sans-serif;font-size:11.5px;padding:5px 7px;cursor:pointer;}
   #map-tools select:focus{outline:none;border-color:var(--amber-500);}
   #map-tools select option{color:var(--white);}
+  /* ===== v2.3: 3D VIEW (MapLibre GL, loaded on first use) =====
+     The 3D map sits in its own container over the Leaflet map. While it is open the
+     Leaflet map is hidden (not destroyed), so 2D state is untouched on the way back. */
+  #map3d{position:absolute;inset:0;z-index:820;display:none;background:transparent;}
+  #map3d-r{position:absolute;inset:0;z-index:819;display:none;background:#0b1620;pointer-events:none;}
+  #map-wrap.is-3d{background:#0b1620;}
+  #map-wrap.is-3d.sw3d #map3d-r{display:block;}
+  #map3d.measuring .maplibregl-canvas{cursor:crosshair;}
+  #map-wrap.is-3d #map3d{display:block;}
+  #map-wrap.is-3d #map{visibility:hidden;}
+  #map-wrap.is-3d #geo-timeline{display:none !important;}
+  /* in 3D the map tools and the swipe divider's tags sit below the 3D toolbar */
+  #map-wrap.is-3d #map-tools{top:var(--v3-top, 12px);}
+  #map-wrap.is-3d #swipe-bar{z-index:823;}
+  #map-wrap.is-3d #swipe-bar .sw-tag{top:var(--v3-top, 12px);}
+  #map-wrap.is-3d #swipe-bar .sw-exit{top:calc(var(--v3-top, 12px) + 30px);}
+  .v3-mlab{pointer-events:none;width:max-content;max-width:none;line-height:1.35;}
+  #v3-status{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:825;display:none;
+    background:rgba(9,18,26,0.95);border:1px solid var(--line);border-radius:3px;padding:12px 16px;
+    font-family:'Inter',sans-serif;font-size:12px;color:var(--slate-300);text-align:center;max-width:300px;line-height:1.5;}
+  #v3-status.show{display:block;}
+  #v3-status button{margin-top:8px;background:none;border:1px solid var(--amber-500);color:var(--amber-300);
+    border-radius:3px;padding:5px 12px;font-family:'Inter',sans-serif;font-size:11px;cursor:pointer;}
+  #map-tools .mt-btn.mt-3d{font-family:'Oswald',sans-serif;font-size:12.5px;font-weight:500;letter-spacing:0.6px;}
+  #map-tools .mt-btn.mt-3d.active{color:var(--amber-300);}
+  /* 3D toolbar: one horizontal bar across the top of the map (wraps to a second row on narrow screens).
+     The MapLibre zoom / compass group is pushed below it (see --v3-top, set from the bar height). */
+  #v3-bar{position:absolute;top:8px;left:8px;right:8px;z-index:826;display:none;flex-wrap:wrap;align-items:flex-end;gap:6px 14px;
+    background:rgba(9,18,26,0.95);border:1px solid var(--line);border-radius:3px;box-shadow:0 6px 20px rgba(0,0,0,0.45);
+    padding:6px 34px 7px 12px;box-sizing:border-box;}
+  #map-wrap.is-3d #v3-bar{display:flex;}
+  #map3d .maplibregl-ctrl-top-left{top:calc(var(--v3-top, 8px) - 8px);}
+  #v3-bar .v3-title{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--amber-300);
+    cursor:help;align-self:center;white-space:nowrap;}
+  #v3-bar .v3-g{display:flex;flex-direction:column;min-width:0;}
+  #v3-bar .v3-x{position:absolute;top:6px;right:8px;background:none;border:none;color:var(--slate-300);font-size:16px;line-height:1;cursor:pointer;padding:0 2px;}
+  #v3-bar .v3-x:hover{color:var(--white);}
+  #v3-bar .v3-lbl{font-family:'Oswald',sans-serif;font-size:8.5px;letter-spacing:1.1px;text-transform:uppercase;color:var(--slate-300);display:block;margin-bottom:3px;white-space:nowrap;}
+  #v3-bar .v3-lbl b{font-family:'IBM Plex Mono',monospace;font-weight:400;color:var(--white);letter-spacing:0;text-transform:none;margin-left:6px;}
+  #v3-bar .v3-seg{display:flex;gap:2px;background:rgba(255,255,255,0.03);border:1px solid var(--line);border-radius:3px;padding:2px;}
+  #v3-bar .v3-seg button{background:none;border:none;border-radius:2px;color:var(--slate-300);cursor:pointer;font-family:'Inter',sans-serif;font-size:11px;padding:4px 8px;white-space:nowrap;}
+  #v3-bar .v3-seg button:hover{background:rgba(255,255,255,0.08);color:var(--white);}
+  #v3-bar .v3-seg button.on{background:rgba(255,255,255,0.08);color:var(--amber-300);}
+  #v3-bar .v3-rng input[type=range]{width:104px;margin:5px 0 4px;accent-color:var(--amber-500);cursor:pointer;}
+  #v3-bar select{box-sizing:border-box;background:rgba(7,17,24,0.95);border:1px solid var(--line);border-radius:2px;
+    color:var(--white);font-family:'Inter',sans-serif;font-size:11px;padding:4px 6px;cursor:pointer;max-width:170px;}
+  #v3-bar .v3-btns{display:flex;gap:5px;}
+  #v3-bar .v3-ovg{position:relative;}
+  #v3-bar .v3-ddbtn{box-sizing:border-box;background:rgba(7,17,24,0.95);border:1px solid var(--line);border-radius:2px;color:var(--white);
+    font-family:'Inter',sans-serif;font-size:11px;padding:4px 8px;cursor:pointer;white-space:nowrap;min-width:110px;text-align:left;}
+  #v3-bar .v3-ddbtn.has-on{border-color:var(--amber-500);color:var(--amber-300);}
+  #v3-bar .v3-pop{position:absolute;top:calc(100% + 8px);left:0;width:270px;max-height:min(70vh, 520px);overflow-y:auto;z-index:831;
+    background:rgba(9,18,26,0.97);border:1px solid var(--line);border-radius:3px;box-shadow:0 8px 24px rgba(0,0,0,0.5);
+    padding:8px 10px 10px;display:flex;flex-direction:column;gap:6px;}
+  #v3-bar .v3-pop[hidden]{display:none;}
+  #v3-bar .v3-pop .op-grp{font-family:'Oswald',sans-serif;font-size:8.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--slate-300);
+    padding-top:6px;border-top:1px solid var(--line);}
+  #v3-bar .v3-pop .op-grp:first-child{border-top:none;padding-top:0;}
+  #v3-bar .v3-pop label{display:flex;align-items:center;gap:7px;cursor:pointer;font-family:'Inter',sans-serif;font-size:11.5px;color:var(--slate-300);}
+  #v3-bar .v3-pop label:hover, #v3-bar .v3-pop .op-row.on label{color:var(--white);}
+  #v3-bar .v3-pop input[type=checkbox]{accent-color:var(--amber-500);margin:0;cursor:pointer;}
+  #v3-bar .v3-pop .op-sl{display:none;align-items:center;gap:8px;padding-left:20px;margin-top:3px;}
+  #v3-bar .v3-pop .op-row.on .op-sl{display:flex;}
+  #v3-bar .v3-pop .op-sl input{flex:1;min-width:0;accent-color:var(--amber-500);margin:0;cursor:pointer;}
+  #v3-bar .v3-pop .op-sl span{font-family:'Oswald',sans-serif;font-size:11px;color:var(--white);min-width:32px;text-align:right;font-variant-numeric:tabular-nums;}
+  #v3-bar .v3-btns button{background:rgba(255,255,255,0.04);border:1px solid var(--line);border-radius:3px;white-space:nowrap;
+    color:var(--slate-300);font-family:'Inter',sans-serif;font-size:11px;padding:5px 9px;cursor:pointer;}
+  #v3-bar .v3-btns button:hover{color:var(--white);border-color:var(--slate-500);}
+  #v3-bar .v3-btns button.primary{border-color:var(--amber-500);color:var(--amber-300);}
+  #v3-bar button:focus-visible, #v3-bar input:focus-visible, #v3-bar select:focus-visible{outline:1px solid var(--amber-500);outline-offset:1px;}
+  /* 2D popups shown in 3D: the Leaflet popup markup is reused so every popup keeps its 2D styling */
+  #map3d .v3-lpop .maplibregl-popup-content{background:none;border:none;padding:0;box-shadow:none;}
+  #map3d .v3-lpop .maplibregl-popup-close-button{color:var(--slate-300);z-index:2;top:3px;right:3px;}
+  #map3d .v3-lwrap.leaflet-container{background:none;font:inherit;outline:none;}
+  #map3d .v3-lwrap .leaflet-popup{position:relative;margin:0;text-align:left;}
+  #map3d .v3-lwrap .leaflet-popup-content{max-height:340px;overflow-y:auto;min-width:200px;max-width:320px;}
+  #map3d .v3-lwrap .chooser-popup .leaflet-popup-content{max-height:none;overflow:visible;}
+  .v3-lm{width:0;height:0;overflow:visible;}
+  .v3-lm .v3-lab{position:absolute;left:12px;top:-9px;white-space:nowrap;pointer-events:none;font-family:'Oswald',sans-serif;
+    font-size:11.5px;letter-spacing:0.6px;color:#fff;text-shadow:0 0 3px #000,0 0 6px #000;}
+  #map3d.points-hidden .v3-lm{display:none;}
+  #map-tools button:focus-visible, #map-tools input:focus-visible, #map-tools select:focus-visible{outline:1px solid var(--amber-500);outline-offset:1px;}
+  /* MapLibre chrome in the dashboard's dark theme */
+  #map3d .maplibregl-ctrl-group{background:rgba(12,25,34,0.92);border:1px solid var(--line);border-radius:3px;box-shadow:0 4px 18px rgba(0,0,0,0.45);}
+  #map3d .maplibregl-ctrl-group button + button{border-top:1px solid var(--line);}
+  #map3d .maplibregl-ctrl-group button .maplibregl-ctrl-icon{filter:invert(1) brightness(0.82);}
+  #map3d .maplibregl-ctrl-group button:hover{background:rgba(255,255,255,0.08);}
+  #map3d .maplibregl-ctrl-attrib{background:rgba(9,18,26,0.75);color:var(--slate-300);}
+  #map3d .maplibregl-ctrl-attrib a{color:var(--slate-300);}
+  #map3d .maplibregl-ctrl-attrib-button{filter:invert(1);}
+  #map3d .maplibregl-popup-content{background:var(--navy-900);color:var(--white);border:1px solid var(--line);border-radius:3px;
+    font-family:'Inter',sans-serif;font-size:11.5px;padding:9px 12px;box-shadow:0 6px 20px rgba(0,0,0,0.45);}
+  #map3d .maplibregl-popup-content b{color:var(--amber-300);font-weight:600;}
+  #map3d .maplibregl-popup-content small{display:block;color:var(--slate-300);font-size:10.5px;margin-top:2px;}
+  #map3d .maplibregl-popup-close-button{color:var(--slate-300);font-size:15px;}
+  #map3d .maplibregl-popup-anchor-bottom .maplibregl-popup-tip{border-top-color:var(--navy-900);}
+  #map3d .maplibregl-popup-anchor-top .maplibregl-popup-tip{border-bottom-color:var(--navy-900);}
+  #map3d .maplibregl-popup-anchor-left .maplibregl-popup-tip{border-right-color:var(--navy-900);}
+  #map3d .maplibregl-popup-anchor-right .maplibregl-popup-tip{border-left-color:var(--navy-900);}
+  #map3d.panning .maplibregl-canvas{cursor:grabbing !important;}
+  /* v2.3: photo card, placed beside its point on the side with the most room and sized to fit the
+     map area (never under the map edges, the 3D toolbar or the map tools); a leader line ties it
+     to the point. Used in 2D and 3D. */
+  #photo-float{position:absolute;z-index:829;display:none;box-sizing:border-box;min-width:260px;
+    background:var(--navy-900);color:var(--white);border:1px solid var(--navy-600);border-radius:3px;
+    box-shadow:0 8px 26px rgba(0,0,0,0.55);padding:10px 12px;font-family:'Inter',sans-serif;font-size:12px;}
+  #photo-float.open{display:block;}
+  #photo-float .pf-x{position:absolute;top:5px;right:6px;background:none;border:none;color:var(--slate-300);
+    font-size:16px;line-height:1;cursor:pointer;padding:0 3px;}
+  #photo-float .pf-x:hover{color:var(--white);}
+  #photo-float .pf-x:focus-visible{outline:1px solid var(--amber-500);}
+  #photo-float .photo-card .pc-img{max-width:none;max-height:none;}
+  #photo-leader{position:absolute;inset:0;width:100%;height:100%;z-index:828;pointer-events:none;display:none;overflow:visible;}
+  #photo-leader.open{display:block;}
+  #map3d .v3-tip .maplibregl-popup-content{padding:5px 9px;pointer-events:none;}
+  #map3d .v3-tip .maplibregl-popup-tip{display:none;}
   #map.tool-measuring, #map.tool-measuring.leaflet-grab{cursor:crosshair !important;}
   #map.tool-measuring .leaflet-interactive, #map.tool-measuring canvas{pointer-events:none !important;}
   .measure-label{background:rgba(9,18,26,0.94);border:1px solid var(--amber-500);color:var(--amber-300);
@@ -1078,6 +1239,20 @@
   .leaflet-container.scale-on-dark #coord-readout .cr-modes button{border-color:rgba(255,255,255,0.6);background:rgba(0,0,0,0.3);}
   .leaflet-container.scale-on-dark #coord-readout .cr-modes button:hover{background:rgba(0,0,0,0.55);}
   .leaflet-container.scale-on-dark #coord-readout .cr-modes button.on{background:#fff;color:#000;border-color:#fff;}
+  /* v2.3: the readout and scale bars in 3D (the readout lives in the hidden 2D map, so it is made visible on top) */
+  #map-wrap.is-3d #coord-readout{visibility:visible;z-index:824;color:#000;
+    text-shadow:0 0 2px #fff,0 0 3px #fff,0 0 4px rgba(255,255,255,0.9);}
+  #map-wrap.is-3d .cr-modes button{border-color:rgba(0,0,0,0.55);background:rgba(255,255,255,0.35);}
+  #map-wrap.is-3d .cr-modes button.on{background:#000;color:#fff;border-color:#000;}
+  #map-wrap.is-3d.v3-dark #coord-readout{color:#fff;text-shadow:0 0 2px #000,0 0 3px #000,0 0 4px rgba(0,0,0,0.85);}
+  #map-wrap.is-3d.v3-dark .cr-modes button{border-color:rgba(255,255,255,0.6);background:rgba(0,0,0,0.3);}
+  #map-wrap.is-3d.v3-dark .cr-modes button.on{background:#fff;color:#000;border-color:#fff;}
+  #map3d .maplibregl-ctrl-bottom-right .maplibregl-ctrl-scale{background:transparent;border:2px solid #000;border-top:none;
+    color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:0 5px;margin:0 10px 4px 0;
+    text-shadow:0 0 2px #fff,0 0 3px #fff,0 0 4px rgba(255,255,255,0.9);
+    box-shadow:0 1px 0 rgba(255,255,255,0.85), 1px 0 0 rgba(255,255,255,0.85), -1px 0 0 rgba(255,255,255,0.85);}
+  #map-wrap.v3-dark #map3d .maplibregl-ctrl-scale{color:#fff;border-color:#fff;text-shadow:0 0 2px #000,0 0 3px #000,0 0 4px rgba(0,0,0,0.85);
+    box-shadow:0 1px 0 rgba(0,0,0,0.75), 1px 0 0 rgba(0,0,0,0.75), -1px 0 0 rgba(0,0,0,0.75);}
 </style>
 </head>
 <body>
@@ -1122,7 +1297,7 @@
       <div class="date-updated">
         <div class="label">Updated</div>
         <div class="value" id="date-updated-val">—</div>
-        <div class="version">v2.2</div>
+        <div class="version">v2.3</div>
       </div>
       <div class="logo"><a href="https://www.globalgeologica.com.au/" target="_blank" rel="noopener noreferrer" title="Global Geologica (opens in a new tab)" aria-label="Global Geologica website (opens in a new tab)"><img src="data:image/png;base64,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" alt="Global Geologica" /></a></div>
     </div>
@@ -1131,6 +1306,49 @@
   <div id="main">
     <div id="map-wrap">
       <div id="map"></div>
+      <!-- v2.3: 3D view (MapLibre GL), shown in place of the Leaflet map while the 3D tool is on -->
+      <div id="map3d-r" aria-hidden="true"></div>
+      <div id="map3d" aria-label="3D map"></div>
+      <div id="v3-status" role="status"></div>
+      <svg id="photo-leader" aria-hidden="true"><line id="pl-line" stroke="#e8c05e" stroke-width="1.6" stroke-linecap="round"/><circle id="pl-dot" r="4.5" fill="none" stroke="#e8c05e" stroke-width="2"/></svg>
+      <div id="photo-float" role="dialog" aria-label="Field photo"></div>
+      <!-- v2.3: 3D toolbar, a horizontal bar across the top of the map; shown only in 3D -->
+      <div id="v3-bar" role="toolbar" aria-label="3D view controls">
+        <span class="v3-title" title="Left-drag tilts and rotates. Middle-button drag pans (or Shift + left-drag on a trackpad). Scroll to zoom. Click any feature for its details. The ruler, area and swipe tools work in 3D.">3D View</span>
+        <div class="v3-g">
+          <span class="v3-lbl">Project areas</span>
+          <div class="v3-seg" id="v3-areas">
+            <button type="button" data-area="AZ">Arizona</button>
+            <button type="button" data-area="NM">New Mexico</button>
+          </div>
+        </div>
+        <div class="v3-g">
+          <span class="v3-lbl">Project</span>
+          <select id="v3-proj" aria-label="Fly to project"><option value="">Fly to project&hellip;</option></select>
+        </div>
+        <div class="v3-g v3-rng"><span class="v3-lbl">Tilt <b id="v3-tilt-v">60&deg;</b></span><input type="range" id="v3-tilt" min="0" max="85" step="1" value="60" aria-label="Tilt"></div>
+        <div class="v3-g v3-rng"><span class="v3-lbl">Exaggeration <b id="v3-exag-v">1.5&times;</b></span><input type="range" id="v3-exag" min="1" max="4" step="0.1" value="1.5" aria-label="Terrain exaggeration"></div>
+        <div class="v3-g">
+          <span class="v3-lbl">Imagery</span>
+          <select id="v3-base" aria-label="3D imagery">
+            <option value="satellite">Satellite</option>
+            <option value="topo">Topo</option>
+            <option value="usgstopo">USGS Topo</option>
+            <option value="elevation">Shaded Relief</option>
+          </select>
+        </div>
+        <div class="v3-g v3-ovg">
+          <span class="v3-lbl">Overlays</span>
+          <button type="button" id="v3-ov-btn" class="v3-ddbtn" aria-haspopup="true" aria-expanded="false" aria-controls="v3-ov-pop">None &#9662;</button>
+          <div id="v3-ov-pop" class="v3-pop" hidden></div>
+        </div>
+        <div class="v3-btns">
+          <button type="button" id="v3-north">Reset north</button>
+          <button type="button" id="v3-flat">Flat view</button>
+          <button type="button" id="v3-exit" class="primary">Back to 2D</button>
+        </div>
+        <button type="button" class="v3-x" id="v3-x" title="Back to 2D (Esc)" aria-label="Back to 2D">&times;</button>
+      </div>
       <!-- v2.2: Cinematic video player, confined to the map area -->
       <div id="cine-player" hidden role="dialog" aria-label="Video player">
         <div class="cine-bar" title="Drag to move">
@@ -1167,6 +1385,7 @@
       </div>
       <div id="map-tools">
         <div class="mt-stack">
+          <button type="button" class="mt-btn mt-3d" id="mt-3d-btn" title="3D view: tilt, rotate and pan the map. The ruler, area and swipe tools keep working in 3D." aria-label="3D view" aria-pressed="false">3D</button>
           <button type="button" class="mt-btn" data-tool="distance" title="Measure distance" aria-label="Measure distance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 16.5 16.5 3.5l4 4-13 13z"/><path d="M7 13l1.8 1.8M9.6 10.4l1.2 1.2M12.2 7.8l1.8 1.8M14.8 5.2l1.2 1.2"/></svg></button>
           <button type="button" class="mt-btn" data-tool="area" title="Measure area" aria-label="Measure area"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M5 7.5 12 3.5l7.5 5-2 10H6.5z" fill="currentColor" fill-opacity="0.18"/><circle cx="5" cy="7.5" r="1.6" fill="currentColor"/><circle cx="12" cy="3.5" r="1.6" fill="currentColor"/><circle cx="19.5" cy="8.5" r="1.6" fill="currentColor"/><circle cx="17.5" cy="18.5" r="1.6" fill="currentColor"/><circle cx="6.5" cy="18.5" r="1.6" fill="currentColor"/></svg></button>
           <button type="button" class="mt-btn" data-tool="swipe" title="Swipe compare" aria-label="Swipe compare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="1.5"/><path d="M3 4.5h9v15H3z" fill="currentColor" fill-opacity="0.22" stroke="none"/><path d="M12 2.5v19"/><path d="M8.5 12H5.5m0 0 1.5-1.5M5.5 12 7 13.5M15.5 12h3m0 0L17 10.5m1.5 1.5L17 13.5"/></svg></button>
@@ -1300,7 +1519,7 @@
           <div id="fp-top">
             <div class="section-title">Project Site</div>
             <div id="fp-sites"><!-- one button per site, built by JS --></div>
-            <div id="fp-hint">Load a site, then click a photo point on the map to view it below.</div>
+            <div id="fp-hint">Load a site, then click a photo point on the map. The photo opens on its point, and the next 20 photos show below.</div>
             <div id="fp-meta">
               <div class="fp-name" id="fp-name"></div>
               <div class="fp-row"><span>Photo</span><span class="v" id="fp-idx"></span></div>
@@ -1313,8 +1532,9 @@
             </div>
           </div>
           <div id="fp-viewer">
-            <div class="fp-empty">No photo selected</div>
-            <img id="fp-img" alt="Field photo" />
+            <div class="fp-thumbs-title" id="fp-thumbs-title">Next photos</div>
+            <div id="fp-thumbs"></div>
+            <div class="fp-empty">Pick a photo point to preview the next photos here</div>
           </div>
         </div>
 
@@ -1389,10 +1609,16 @@
     <label class="hs-check"><input type="checkbox" id="hyper-white" checked /> Remove white background</label>
     <div class="hs-note" id="hyper-note">Multi-band raster loads only while this basemap is selected; the reference basemap stays beneath it.</div>
     <div id="hs-ramp" hidden>
-    <span class="hs-lbl" id="hs-ramp-title">Colour Ramp</span>
+    <span class="hs-lbl" id="hs-ramp-title">Color Ramp</span>
     <div id="hs-ramp-bar"></div>
     <div class="hs-ramp-ends"><span>Low</span><span class="mid" id="hs-ramp-desc"></span><span>High</span></div>
     </div>
+    </div>
+    <div id="img-ovl">
+    <span class="ov-title">Imagery Overlays</span>
+    <div class="ov-note">Lay geophysics and hyperspectral grids over any basemap. Set each one's opacity; the most recently switched-on grid sits on top.</div>
+    <div id="img-ovl-list"><!-- built by JS --></div>
+    <label class="ov-check"><input type="checkbox" id="img-ovl-white" checked /> Remove white background</label>
     </div>
     </div>
         </div>
@@ -2045,7 +2271,7 @@ function applyShine(){
     const mode = (document.getElementById('shine-mode') || {}).value || 'auto';
     note.textContent = mode === 'off' ? 'Off — standard claim symbology'
       : mode === 'on' ? 'Forced on for every basemap'
-      : on ? 'Active — claims emphasised'
+      : on ? 'Active — claims emphasized'
            : 'Idle — flat basemap needs no emphasis';
   }
 }
@@ -2423,7 +2649,7 @@ function renderStats(){
     });
     statList.appendChild(tile);
   });
-  if(!shown.length) statList.appendChild(emptyNote('Nothing to summarise.'));
+  if(!shown.length) statList.appendChild(emptyNote('Nothing to summarize.'));
 
   /* --- fees per county --- */
   const countyCounter = {};
@@ -2456,7 +2682,7 @@ function renderStats(){
     `;
     feesList.appendChild(tile);
   });
-  if(!countyFeeEntries.length) feesList.appendChild(emptyNote('Nothing to summarise.'));
+  if(!countyFeeEntries.length) feesList.appendChild(emptyNote('Nothing to summarize.'));
 
   /* --- BLM / county renewals --- */
   const blmRenewalFee = feeCount * 200;
@@ -2661,6 +2887,145 @@ function showPhotosTab(){
   if(tab && !tab.classList.contains('active')) tab.click();
 }
 
+/* v2.3: a picked photo opens in a popup on its point (2D here, 3D in the 3D view), shown at
+   twice the stored size (CSS only: the same 256 px WebP, so no extra file size). The Field
+   Photos tab keeps the details and Prev / Next, and its lower area previews the next 20. */
+function photoCard(site, idx){
+  const list = FIELD_PHOTOS[site], ph = list[idx];
+  const el = document.createElement('div');
+  el.className = 'photo-card';
+  el.innerHTML = `<div class="pc-head"><span class="popup-title"></span><span class="pc-idx">${idx+1} of ${list.length} · ${site}</span></div>
+    <img class="pc-img" width="${ph.w*2}" height="${ph.h*2}" src="data:image/webp;base64,${ph.i}">
+    <div class="pc-foot"><button type="button" class="pc-prev"${idx === 0 ? ' disabled' : ''}>&#9664; Prev</button>
+    <span class="pc-meta">${ph.la.toFixed(5)}, ${ph.lo.toFixed(5)} · ${Math.round(ph.z).toLocaleString()} m</span>
+    <button type="button" class="pc-next"${idx === list.length-1 ? ' disabled' : ''}>Next &#9654;</button></div>`;
+  el.querySelector('.popup-title').textContent = ph.n;
+  el.querySelector('.pc-img').alt = `${site} field photo ${ph.n}`;
+  el.querySelector('.pc-prev').addEventListener('click', e=>{ e.stopPropagation(); selectPhoto(site, idx - 1, true); });
+  el.querySelector('.pc-next').addEventListener('click', e=>{ e.stopPropagation(); selectPhoto(site, idx + 1, true); });
+  return el;
+}
+function renderPhotoThumbs(site, idx){
+  const box = document.getElementById('fp-thumbs'), list = FIELD_PHOTOS[site];
+  const next = list.slice(idx + 1, idx + 21);
+  box.innerHTML = '';
+  next.forEach((ph, k)=>{
+    const j = idx + 1 + k;
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'fp-th';
+    b.title = `${ph.n} (${j+1} of ${list.length})`;
+    b.innerHTML = `<img alt="" loading="lazy" src="data:image/webp;base64,${ph.i}"><span>${j+1}</span>`;
+    b.addEventListener('click', ()=> selectPhoto(site, j, true));
+    box.appendChild(b);
+  });
+  document.getElementById('fp-thumbs-title').textContent = next.length
+    ? `Next ${next.length} photo${next.length > 1 ? 's' : ''} · ${site}` : `Last photo of ${site}`;
+  document.getElementById('fp-viewer').classList.add('has-photo');
+  box.scrollTop = 0;
+}
+/* ----- photo card placement -----
+   The card goes on whichever side of the point (right, left, above, below) lets the photo show
+   largest, inside the map area less a margin, the map tools column and (in 3D) the 3D toolbar.
+   The photo is shown at 2x where it fits and scaled down only as far as needed. It keeps its
+   side while the map moves unless another side becomes clearly better, and if the point leaves
+   the view the card stays put and the leader line hides. */
+const photoFloatEl = document.getElementById('photo-float');
+const photoLeaderEl = document.getElementById('photo-leader');
+let photoFloat = {open:false, site:null, idx:null, side:null};
+function photoFloatIn3d(){ return !!(window.GG3D && window.GG3D.isActive()); }
+function showPhotoFloat(site, idx){
+  photoFloat = {open:true, site, idx, side: photoFloat.open ? photoFloat.side : null};
+  photoFloatEl.innerHTML = '';
+  const x = document.createElement('button');
+  x.type = 'button'; x.className = 'pf-x'; x.title = 'Close photo'; x.setAttribute('aria-label', 'Close photo'); x.innerHTML = '&times;';
+  x.addEventListener('click', hidePhotoFloat);
+  photoFloatEl.appendChild(x);
+  photoFloatEl.appendChild(photoCard(site, idx));
+  photoFloatEl.classList.add('open');
+  positionPhotoFloat();
+}
+function hidePhotoFloat(){
+  photoFloat.open = false; photoFloat.side = null;
+  photoFloatEl.classList.remove('open');
+  photoLeaderEl.classList.remove('open');
+}
+function photoAnchor(){
+  const ph = FIELD_PHOTOS[photoFloat.site][photoFloat.idx];
+  if(photoFloatIn3d()) return window.GG3D.projectPhoto ? window.GG3D.projectPhoto(ph.lo, ph.la) : null;
+  const p = map.latLngToContainerPoint([ph.la, ph.lo]);
+  return {x: p.x, y: p.y};
+}
+function positionPhotoFloat(){
+  if(!photoFloat.open) return;
+  const wrapEl = document.getElementById('map-wrap');
+  const W = wrapEl.clientWidth, H = wrapEl.clientHeight;
+  const p = photoAnchor();
+  if(!p){ photoFloatEl.style.visibility = 'hidden'; photoLeaderEl.classList.remove('open'); return; }
+  photoFloatEl.style.visibility = '';
+  const in3d = photoFloatIn3d();
+  const M = 10, RIGHT = 54;                                      // margin; map tools column on the right
+  const TOP = in3d ? (parseFloat(getComputedStyle(wrapEl).getPropertyValue('--v3-top')) || 64) : M;
+  const ph = FIELD_PHOTOS[photoFloat.site][photoFloat.idx];
+  const iw = ph.w * 2, ih = ph.h * 2;                            // 2x display size (same stored image)
+  const CW = 26, CH = 92, MINW = 260, GAP = 18;                  // card chrome around the photo
+  const inView = p.x >= 0 && p.x <= W && p.y >= TOP && p.y <= H;
+  const areas = {
+    right: [p.x + GAP, TOP, W - RIGHT, H - M],
+    left:  [M, TOP, p.x - GAP, H - M],
+    above: [M, TOP, W - RIGHT, p.y - GAP],
+    below: [M, p.y + GAP, W - RIGHT, H - M]
+  };
+  const fit = a => { const aw = a[2] - a[0], ah = a[3] - a[1]; if(aw < MINW || ah < CH + 60) return 0;
+                     return Math.min(1, (aw - CW) / iw, (ah - CH) / ih); };
+  let side = null, s = 0;
+  if(inView){
+    const order = ['right', 'left', 'above', 'below'];
+    const sc = {}; order.forEach(k => sc[k] = fit(areas[k]));
+    const best = order.reduce((b, k) => sc[k] > sc[b] ? k : b, order[0]);
+    side = (photoFloat.side && sc[photoFloat.side] >= Math.max(0.35, sc[best] * 0.9)) ? photoFloat.side : best;
+    s = sc[side];
+    if(s < 0.35) side = 'over';
+  } else if(photoFloat.side){
+    photoLeaderEl.classList.remove('open');                      // point panned out of view: leave the card where it is
+    return;
+  } else side = 'over';
+  if(side === 'over') s = Math.max(0.2, Math.min(1, (W - RIGHT - M - CW) / iw, (H - TOP - M - CH) / ih));
+  photoFloat.side = side;
+  const img = photoFloatEl.querySelector('.pc-img');
+  img.style.width = Math.round(iw * s) + 'px';
+  img.style.height = Math.round(ih * s) + 'px';
+  const w = photoFloatEl.offsetWidth, h = photoFloatEl.offsetHeight;
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  let L0, T0;
+  if(side === 'right'){ L0 = p.x + GAP; T0 = clamp(p.y - h / 2, TOP, H - M - h); }
+  else if(side === 'left'){ L0 = p.x - GAP - w; T0 = clamp(p.y - h / 2, TOP, H - M - h); }
+  else if(side === 'above'){ T0 = p.y - GAP - h; L0 = clamp(p.x - w / 2, M, W - RIGHT - w); }
+  else if(side === 'below'){ T0 = p.y + GAP; L0 = clamp(p.x - w / 2, M, W - RIGHT - w); }
+  else {                                                          // no side has room: the corner away from the point
+    L0 = p.x < W / 2 ? W - RIGHT - w : M;
+    T0 = p.y < (TOP + H) / 2 ? H - M - h : TOP;
+  }
+  L0 = clamp(L0, M, Math.max(M, W - M - w)); T0 = clamp(T0, TOP, Math.max(TOP, H - M - h));
+  photoFloatEl.style.left = Math.round(L0) + 'px';
+  photoFloatEl.style.top = Math.round(T0) + 'px';
+  if(inView){
+    const nx = clamp(p.x, L0, L0 + w), ny = clamp(p.y, T0, T0 + h);
+    const line = document.getElementById('pl-line'), dot = document.getElementById('pl-dot');
+    line.setAttribute('x1', p.x); line.setAttribute('y1', p.y); line.setAttribute('x2', nx); line.setAttribute('y2', ny);
+    dot.setAttribute('cx', p.x); dot.setAttribute('cy', p.y);
+    photoLeaderEl.classList.toggle('open', side !== 'over' || Math.hypot(nx - p.x, ny - p.y) > 2);
+  } else photoLeaderEl.classList.remove('open');
+}
+window.positionPhotoFloat = positionPhotoFloat;
+map.on('move zoom resize', positionPhotoFloat);
+window.addEventListener('resize', positionPhotoFloat);
+if(window.ResizeObserver) new ResizeObserver(positionPhotoFloat).observe(document.getElementById('map-wrap'));
+['pointerdown','mousedown','wheel','dblclick','touchstart'].forEach(t => photoFloatEl.addEventListener(t, e => e.stopPropagation(), {passive:true}));
+document.addEventListener('keydown', e=>{
+  if(e.key !== 'Escape' || !photoFloat.open || photoFloatIn3d()) return;
+  if(measureMode || (typeof swipeActive !== 'undefined' && swipeActive)) return;
+  hidePhotoFloat();
+});
 function selectPhoto(site, idx, pan){
   const list = FIELD_PHOTOS[site];
   if(!list || idx < 0 || idx >= list.length) return;
@@ -2671,10 +3036,6 @@ function selectPhoto(site, idx, pan){
   marker.bringToFront();
   photoSel = {site, idx, marker};
 
-  const img = document.getElementById('fp-img');
-  img.src = 'data:image/webp;base64,' + ph.i;
-  img.alt = `${site} field photo ${ph.n}`;
-  document.getElementById('fp-viewer').classList.add('has-photo');
   document.getElementById('fp-meta').classList.add('has-photo');
   document.getElementById('fp-name').textContent = ph.n;
   document.getElementById('fp-idx').textContent = `${idx+1} of ${list.length} · ${site}`;
@@ -2682,15 +3043,22 @@ function selectPhoto(site, idx, pan){
   document.getElementById('fp-z').textContent = `${Math.round(ph.z).toLocaleString()} m`;
   document.getElementById('fp-prev').disabled = idx === 0;
   document.getElementById('fp-next').disabled = idx === list.length - 1;
-  if(pan && !map.getBounds().pad(-0.1).contains(marker.getLatLng())) map.panTo(marker.getLatLng());
+  renderPhotoThumbs(site, idx);
+  const in3d = !!(window.GG3D && window.GG3D.isActive());
+  if(!in3d && pan && !map.getBounds().pad(-0.1).contains(marker.getLatLng())) map.panTo(marker.getLatLng(), {animate:false});
+  if(window.v3PhotoSelected) window.v3PhotoSelected(site, idx, pan);   // 3D pin follows
+  showPhotoFloat(site, idx);
   showPhotosTab();
 }
 
 function clearPhotoSelection(){
+  if(photoSel && photoSel.marker) photoSel.marker.setStyle(PHOTO_STYLE).setRadius(PHOTO_STYLE.radius);
   photoSel = null;
   document.getElementById('fp-viewer').classList.remove('has-photo');
   document.getElementById('fp-meta').classList.remove('has-photo');
-  document.getElementById('fp-img').removeAttribute('src');
+  document.getElementById('fp-thumbs').innerHTML = '';
+  hidePhotoFloat();
+  if(window.v3PhotoSelected) window.v3PhotoSelected(null);   // v2.3
 }
 
 (function buildFieldPhotos(){
@@ -3273,7 +3641,7 @@ function updateHyperRamp(proj){
   const box = document.getElementById('hs-ramp');
   const r = GEOPHYS_RAMPS[proj];
   if(!r){ box.hidden = true; return; }
-  document.getElementById('hs-ramp-title').textContent = `${proj} Colour Ramp`;
+  document.getElementById('hs-ramp-title').textContent = `${proj} Color Ramp`;
   document.getElementById('hs-ramp-desc').textContent = r.desc;
   document.getElementById('hs-ramp-bar').style.background = `linear-gradient(to right, ${r.stops.join(', ')})`;
   box.hidden = false;
@@ -3306,6 +3674,88 @@ function setHyperWhiteRemoval(on){
 
   setHyperOpacity(parseInt(slider.value, 10));
   setHyperWhiteRemoval(white.checked);
+})();
+
+/* ---------- v2.3: IMAGERY OVERLAYS ----------
+   Geophysics (magnetics, radiometrics) and hyperspectral grids can be laid over any basemap,
+   several at once, each with its own opacity slider. They are separate copies of the survey
+   tile layers in their own pane (just above the survey basemap pane, under every vector layer),
+   so the Hyperspectral / Geophysics basemap options keep working exactly as before. The most
+   recently switched-on grid is drawn on top. One white-key switch covers all overlays. The 3D
+   view mirrors them, opacity included. */
+map.createPane('imgOverlayPane');
+map.getPane('imgOverlayPane').style.zIndex = 255;
+const imgOverlays = [];
+(function buildImageOverlays(){
+  const list = document.getElementById('img-ovl-list');
+  const whiteCb = document.getElementById('img-ovl-white');
+  let zTop = 1;
+  const clone = src => new WhiteKeyTileLayer(src._url, Object.assign({}, src.options,
+    {pane:'imgOverlayPane', opacity:0.75, whiteRemoval: whiteCb.checked}));
+  const refresh3d = () => { if(window.GG3D && window.GG3D.refresh) window.GG3D.refresh(); };
+  const subs = [];
+  const notify = () => subs.forEach(fn => { try { fn(); } catch(e){ console.warn(e); } });
+  /* shared with the 3D toolbar's Overlays menu, so both controls drive (and show) the same grids */
+  window.ggOverlays = {
+    list: imgOverlays,
+    setOn(ov, on){ if(ov.cb.checked !== on){ ov.cb.checked = on; ov.cb.dispatchEvent(new Event('change')); } },
+    setOpacity(ov, v){ ov.rng.value = v; ov.rng.dispatchEvent(new Event('input')); },
+    onChange(fn){ subs.push(fn); }
+  };
+  const groups = [];
+  RASTER_MENUS.hyperspectral.forEach(g => groups.push(g));
+  RASTER_MENUS.geophysics.forEach(g => groups.push(g));
+  groups.forEach(g=>{
+    const head = document.createElement('div'); head.className = 'ov-grp'; head.textContent = g.label;
+    list.appendChild(head);
+    g.items.forEach(([key, label])=>{
+      let srcLayers = [], bounds = null;
+      if(GEOPHYS_RASTERS[key]){
+        srcLayers = (geoRasterKeys[key] || []).map(k => hyperTileLayers[k]).filter(Boolean);
+        GEOPHYS_RASTERS[key].parts.forEach(pt => { bounds = bounds ? bounds.extend(pt.bounds) : L.latLngBounds(pt.bounds); });
+      } else if(hyperTileLayers[key]){
+        srcLayers = [hyperTileLayers[key]];
+        if(aoiLayers[key]) bounds = aoiLayers[key].getBounds();
+      }
+      if(!srcLayers.length) return;
+      const ov = {key, label, layers: srcLayers.map(clone), bounds, on:false, opacity:75};
+      imgOverlays.push(ov);
+      const ramp = GEOPHYS_RAMPS[key];
+      const row = document.createElement('div'); row.className = 'ov-row';
+      row.innerHTML = `<div class="ov-top"><label><input type="checkbox"/><span class="ov-nm"></span></label>
+          <button type="button" class="ov-zoom" title="Zoom to this grid">Zoom to</button></div>
+        <div class="ov-ctl">
+          <div class="ov-slider"><span class="k">Opacity</span><input type="range" min="0" max="100" step="1" value="75"/><span class="ov-val">75%</span></div>
+          ${ramp ? `<div class="ov-ramp" style="background:linear-gradient(to right, ${ramp.stops.join(', ')})" title="${ramp.desc}"></div><div class="ov-ends"><span>Low</span><span>High</span></div>` : ''}
+        </div>`;
+      row.querySelector('.ov-nm').textContent = label;
+      const cb = row.querySelector('input[type=checkbox]'), rng = row.querySelector('input[type=range]'), val = row.querySelector('.ov-val');
+      ov.cb = cb; ov.rng = rng; ov.group = g.label;
+      cb.setAttribute('aria-label', `Overlay ${label}`);
+      rng.setAttribute('aria-label', `${label} opacity`);
+      cb.addEventListener('change', ()=>{
+        ov.on = cb.checked;
+        row.classList.toggle('on', ov.on);
+        if(ov.on){ zTop++; ov.layers.forEach(l => { l.setZIndex(zTop); l.addTo(map); }); }
+        else ov.layers.forEach(l => map.removeLayer(l));
+        notify();
+      });
+      rng.addEventListener('input', ()=>{
+        ov.opacity = +rng.value; val.textContent = rng.value + '%';
+        ov.layers.forEach(l => l.setOpacity(ov.opacity / 100));
+        refresh3d();
+        notify();
+      });
+      row.querySelector('.ov-zoom').addEventListener('click', ()=>{
+        if(!bounds) return;
+        if(!cb.checked){ cb.checked = true; cb.dispatchEvent(new Event('change')); }
+        if(window.GG3D && window.GG3D.isActive()) window.GG3D.fitBounds([bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]);
+        else map.fitBounds(bounds, {padding:[40, 40]});
+      });
+      list.appendChild(row);
+    });
+  });
+  whiteCb.addEventListener('change', ()=> imgOverlays.forEach(ov => ov.layers.forEach(l => l.setWhiteRemoval(whiteCb.checked))));
 })();
 
 
@@ -4383,7 +4833,7 @@ const mineMarkers = [];        // {mk, m, st}, for the hover label
    formula on the WGS84 radius. Swipe Compare clips two independent copies of the chosen
    layers to either side of a draggable divider. */
 const mtTools = document.getElementById('map-tools');
-const mtButtons = mtTools.querySelectorAll('.mt-btn');
+const mtButtons = mtTools.querySelectorAll('.mt-btn[data-tool]');   // v2.3: the 3D button is a mode, not a tool
 const mtMeasurePanel = document.getElementById('mt-measure');
 const mtSwipePanel = document.getElementById('mt-swipe');
 let mtOpen = null;              // 'distance' | 'area' | 'swipe' | null
@@ -4853,9 +5303,10 @@ map.on('move zoom zoomend viewreset resize', swipeClip);
     return `${lat.toFixed(5)}°, ${lon.toFixed(5)}°`;
   }
   function show(){
-    const ll = overMap && last ? last : map.getCenter();
-    val.textContent = fmt(ll) + (overMap && last ? '' : '   (centre)');
+    const ll = overMap && last ? last : ((window.ggCoordCenter && window.ggCoordCenter()) || map.getCenter());
+    val.textContent = fmt(ll) + (overMap && last ? '' : '   (center)');
   }
+  window.ggCoordShow = show;   // v2.3: the 3D view refreshes it as its camera moves
   function setMode(m){
     mode = m;
     box.querySelectorAll('[data-cr]').forEach(b => b.classList.toggle('on', b.dataset.cr === m));
@@ -4878,8 +5329,10 @@ map.on('move zoom zoomend viewreset resize', swipeClip);
       rafCr = false;
       const ev = lastPtr, r = mapBox.getBoundingClientRect();
       const inside = ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom
-        && !(ev.target.closest && ev.target.closest('#coord-readout, #map-tools'));
-      if(inside){ overMap = true; last = map.containerPointToLatLng([ev.clientX - r.left, ev.clientY - r.top]); }
+        && !(ev.target.closest && ev.target.closest('#coord-readout, #map-tools, #v3-bar, #photo-float'));
+      if(inside){ overMap = true;
+        last = (window.ggCoordAt && window.ggCoordAt(ev.clientX - r.left, ev.clientY - r.top))   // v2.3: 3D view projection
+            || map.containerPointToLatLng([ev.clientX - r.left, ev.clientY - r.top]); }
       else overMap = false;
       show();
     });
@@ -5748,6 +6201,993 @@ document.querySelectorAll('#basemap-ctrl .opt').forEach(opt=>{
 
   claimInput.addEventListener('input', ()=> renderClaimResults(siteSelect.value, claimInput.value));
 })();
+
+/* ---------- v2.3: 3D VIEW ----------
+   The 3D tool (top of the map tools, above the ruler) swaps the Leaflet map for a MapLibre GL
+   map with real terrain, so the view can be panned, tilted (up to 85 deg) and rotated.
+   - Library: MapLibre GL JS 4.7.1, loaded only the first time 3D is opened (jsDelivr, then
+     cdnjs as a fallback), so the 2D dashboard loads exactly as before.
+   - Terrain: AWS Open Data terrain tiles (Terrarium encoding, about 30 m in the US), with an
+     exaggeration slider. Imagery: the same Esri / USGS tile services as the 2D basemaps.
+   - Focus areas: the Arizona and New Mexico project areas, computed from the project points and
+     claim polygons (AZ/NM split on the state line at 109.046 W). Entering 3D keeps the current
+     2D view when it is inside one of the two areas, otherwise it flies to the nearer one.
+   - Everything loaded in 2D is mirrored, generically, so new 2D layers come along for free:
+       vector layers (claims, targets, environmental, public lands, geology, mines, hyperspectral
+       alteration, live GIS services...) are read from the Leaflet layers with their 2D styles;
+       tile overlays (survey rasters, incl. the white-keyed / colour-mapped ones) are re-served
+       through a small tile protocol that reuses the 2D keying; markers and their permanent
+       labels are cloned from the 2D DOM. The mirror follows Map Layers while 3D is open.
+   - Clicks use the 2D click machinery itself (featureClickIndex, the overlap picker and the
+     very same popups): the clicked spot is hit-tested with 3D screen projection, the matching
+     2D feature opens its popup on the hidden 2D map, and that popup's content is moved into a
+     3D popup, so every layer pops up exactly as it does in 2D.
+   - Claim outlines: over satellite imagery the claim outlines switch to brighter versions of
+     each site's colour (BRIGHT_CLAIM_LINES); fills and every other layer keep their 2D colours.
+   - Field Photos: thin pins staked into the terrain (GPU symbol layer). Clicking a pin opens the
+     photo in a popup on the pin (the same photo card as 2D); Prev / Next and the arrow keys move it.
+   - Mouse: left-drag tilts (up / down) and rotates (left / right); middle-button drag pans
+     (Shift + left-drag also pans, for trackpads). Right-drag / Ctrl + drag also tilts. Scroll zooms.
+   - Map tools work inside 3D: the 3D button is a mode, not a tool, so Measure Distance, Measure
+     Area and Swipe Compare run on the 3D map. Measuring reuses the 2D measure state and panel
+     (same totals, units and buttons), with the line / shape draped on the terrain. Swipe runs
+     a second, camera-locked 3D map underneath for the right-hand side; the main 3D canvas is
+     clipped at the divider, so both sides keep every overlay and the 2D divider is reused.
+   - Toolbar: a horizontal bar across the top of the map, shown only in 3D.
+   - Leaving 3D (Back to 2D, the X, the 3D button, or Esc when no tool is busy) hands the 3D
+     centre and zoom back to the 2D map.
+   - Preparation for drill data and DXF: window.GG3D exposes the 3D map and a small API
+     (ready, addGeoJSON, remove, list, flyToArea, flyToProject). */
+(function initView3D(){
+  const ML_VER = '4.7.1';
+  const ML_JS  = [`https://cdn.jsdelivr.net/npm/maplibre-gl@${ML_VER}/dist/maplibre-gl.js`,
+                  `https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/${ML_VER}/maplibre-gl.js`];
+  const ML_CSS = [`https://cdn.jsdelivr.net/npm/maplibre-gl@${ML_VER}/dist/maplibre-gl.css`,
+                  `https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/${ML_VER}/maplibre-gl.css`];
+  const DEM_TILES = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png';
+  const BASES = {
+    satellite:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', max:19, attr:'Esri, Maxar, Earthstar Geographics'},
+    topo:     {url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', max:19, attr:'Esri, World Topo Map'},
+    usgstopo: {url:'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}', max:16, attr:'USGS, The National Map'},
+    elevation:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}', max:13, attr:'Esri, World Shaded Relief'}
+  };
+  const STATE_LINE = -109.046;              // AZ / NM border (approx. 109 deg 02' 48" W)
+  const AREA_NAMES = {AZ:'Arizona', NM:'New Mexico'};
+  const EMPTY = {type:'FeatureCollection', features:[]};
+  /* panes that never mirror: tools, swipe copies, popups / tooltips (2D only), and the photo points (drawn as pins) */
+  const SKIP_PANES = new Set(['measurePane','swipeLeftPane','swipeRightPane','photoPane','popupPane','tooltipPane','markerPane','shadowPane']);
+
+  const wrap    = document.getElementById('map-wrap');
+  const box3d   = document.getElementById('map3d');
+  const bar     = document.getElementById('v3-bar');
+  const status  = document.getElementById('v3-status');
+  const tiltIn  = document.getElementById('v3-tilt'),  tiltV = document.getElementById('v3-tilt-v');
+  const exagIn  = document.getElementById('v3-exag'),  exagV = document.getElementById('v3-exag-v');
+  const baseSel = document.getElementById('v3-base');
+  const projSel = document.getElementById('v3-proj');
+  const boxR    = document.getElementById('map3d-r');
+  const btn3d   = document.getElementById('mt-3d-btn');
+
+  let m3 = null, loaded = false, active = false, libPromise = null;
+  let base3 = 'satellite', last2dBase = null, readyQ = [], userLayers = {};
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  /* ----- project areas (AZ / NM) from project points and claim polygons ----- */
+  const AREAS = {AZ:{b:null, sites:{}}, NM:{b:null, sites:{}}};
+  const stateOf = lng => lng < STATE_LINE ? 'AZ' : 'NM';
+  const grow = (b, lng, lat) => b ? [Math.min(b[0],lng), Math.min(b[1],lat), Math.max(b[2],lng), Math.max(b[3],lat)] : [lng,lat,lng,lat];
+  const eachCoord = (c, fn) => { if(typeof c[0] === 'number') fn(c[0], c[1]); else c.forEach(x => eachCoord(x, fn)); };
+  const firstCoord = c => typeof c[0] === 'number' ? c : firstCoord(c[0]);
+  const SITE_BOUNDS = {};
+  Object.keys(CLAIMS_DATA).forEach(site=>{
+    CLAIMS_DATA[site].features.forEach(f=>{
+      if(!f.geometry) return;
+      const st = stateOf(firstCoord(f.geometry.coordinates)[0]);
+      eachCoord(f.geometry.coordinates, (lng,lat)=>{
+        AREAS[st].b = grow(AREAS[st].b, lng, lat);
+        if(!PROPOSED_SITES.has(site)) SITE_BOUNDS[site] = grow(SITE_BOUNDS[site], lng, lat);
+      });
+      if(!PROPOSED_SITES.has(site)) AREAS[st].sites[site] = true;
+    });
+  });
+  CELATUS_DATA.features.forEach(f=>{
+    const [lng, lat] = f.geometry.coordinates, st = stateOf(lng);
+    AREAS[st].b = grow(AREAS[st].b, lng, lat);
+    AREAS[st].sites[f.properties.NAME] = true;
+    if(!SITE_BOUNDS[f.properties.NAME]) SITE_BOUNDS[f.properties.NAME] = [lng-0.02, lat-0.02, lng+0.02, lat+0.02];
+  });
+  ['AZ','NM'].forEach(st=>{
+    const og = document.createElement('optgroup'); og.label = AREA_NAMES[st];
+    Object.keys(AREAS[st].sites).sort().forEach(n => { const o = document.createElement('option'); o.value = n; o.textContent = n; og.appendChild(o); });
+    projSel.appendChild(og);
+  });
+  function markArea(st){ document.querySelectorAll('#v3-areas button').forEach(b => b.classList.toggle('on', b.dataset.area === st)); }
+  function areaAt(lng, lat){
+    for(const st of ['AZ','NM']){
+      const b = AREAS[st].b; if(!b) continue;
+      if(lng >= b[0]-0.1 && lng <= b[2]+0.1 && lat >= b[1]-0.1 && lat <= b[3]+0.1) return st;
+    }
+    return null;
+  }
+  function nearestArea(lng, lat){
+    let best = 'NM', bd = Infinity;
+    ['AZ','NM'].forEach(st=>{ const b = AREAS[st].b; if(!b) return;
+      const d = Math.hypot((b[0]+b[2])/2 - lng, (b[1]+b[3])/2 - lat); if(d < bd){ bd = d; best = st; } });
+    return best;
+  }
+
+  /* ----- library loading ----- */
+  const tryEach = (urls, make) => urls.reduce((p, u) => p.catch(() => new Promise((res, rej) => {
+    const el = make(u); el.onload = res; el.onerror = () => { el.remove(); rej(); }; document.head.appendChild(el);
+  })), Promise.reject());
+  function loadLib(){
+    if(window.maplibregl) return Promise.resolve();
+    if(!libPromise){
+      tryEach(ML_CSS, u => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = u; return l; }).catch(()=>{});
+      libPromise = tryEach(ML_JS, u => { const s = document.createElement('script'); s.src = u; return s; })
+        .then(() => { if(!window.maplibregl) throw new Error('MapLibre missing'); })
+        .catch(err => { libPromise = null; throw err; });
+    }
+    return libPromise;
+  }
+  function showStatus(msg, retry){
+    status.innerHTML = esc(msg) + (retry ? '<br><button type="button" id="v3-retry">Try again</button>' : '');
+    status.classList.add('show');
+    if(retry) document.getElementById('v3-retry').onclick = () => { status.classList.remove('show'); enter(); };
+  }
+  const hideStatus = () => status.classList.remove('show');
+
+  /* ----- white-keyed survey tiles: the 2D layer's own keying, served to MapLibre ----- */
+  const WK = {};
+  let protoOn = false;
+  function registerProtocol(){
+    if(protoOn) return; protoOn = true;
+    maplibregl.addProtocol('ggwk', async (params)=>{
+      const rest = params.url.slice('ggwk://'.length), cut = rest.indexOf('/');
+      const lay = WK[rest.slice(0, cut)], real = rest.slice(cut + 1);
+      const img = await new Promise((res, rej)=>{ const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => res(im); im.onerror = rej; im.src = real; });
+      const c = document.createElement('canvas'); c.width = img.naturalWidth || 256; c.height = img.naturalHeight || 256;
+      const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0);
+      try {
+        if(lay && (lay.options.whiteRemoval || lay.options.colorLut)) lay._keyOutWhite(ctx, {x:c.width, y:c.height});
+        const blob = await new Promise((res, rej) => c.toBlob(b => b ? res(b) : rej(), 'image/png'));
+        return {data: await blob.arrayBuffer()};
+      } catch(e){
+        const r = await fetch(real);           // tainted canvas: fall back to the raw tile
+        return {data: await r.arrayBuffer()};
+      }
+    });
+  }
+
+  /* ----- map construction ----- */
+  function baseStyle(){
+    const sources = {
+      dem:{type:'raster-dem', tiles:[DEM_TILES], encoding:'terrarium', tileSize:256, maxzoom:15,
+           attribution:'Terrain: AWS Terrain Tiles (Mapzen)'}
+    };
+    const layers = [{id:'v3-bg', type:'background', paint:{'background-color':'#0b1620'}}];
+    Object.keys(BASES).forEach(k=>{
+      sources['base-' + k] = {type:'raster', tiles:[BASES[k].url], tileSize:256, maxzoom:BASES[k].max, attribution:BASES[k].attr};
+      layers.push({id:'base-' + k, type:'raster', source:'base-' + k, layout:{visibility: k === base3 ? 'visible' : 'none'}});
+    });
+    /* invisible marker layer: raster overlays go just below it, vector overlays above it */
+    layers.push({id:'v3-anchor', type:'background', paint:{'background-opacity':0}});
+    return {version:8, sources, layers};
+  }
+  const SKY = {'sky-color':'#16324a', 'horizon-color':'#5f7f93', 'fog-color':'#9fb3bf',
+               'sky-horizon-blend':0.5, 'horizon-fog-blend':0.6, 'fog-ground-blend':0.7};
+  function buildMap(center, zoom){
+    registerProtocol();
+    m3 = new maplibregl.Map({
+      container: box3d,
+      style: baseStyle(),
+      center, zoom, pitch: +tiltIn.value, bearing: 0, maxPitch: 85,
+      attributionControl: {compact: true}, boxZoom: false
+    });
+    m3.addControl(new maplibregl.NavigationControl({visualizePitch:true}), 'top-left');
+    /* scale bars, metric and imperial, as in 2D (measured across the middle of the view) */
+    m3.addControl(new maplibregl.ScaleControl({maxWidth:140, unit:'metric'}), 'bottom-right');
+    m3.addControl(new maplibregl.ScaleControl({maxWidth:140, unit:'imperial'}), 'bottom-right');
+    wireMouse();
+    m3.on('load', ()=>{
+      m3.setTerrain({source:'dem', exaggeration: +exagIn.value});
+      try { m3.setSky(SKY); } catch(e){}
+      addPhotoPins(m3);
+      mirL = makeMirror(m3);
+      addMeasureLayers(m3);
+      loaded = true;
+      syncAll(true, false);
+      hideStatus();
+      wrap.classList.toggle('v3-dark', base3 === 'satellite');
+      readyQ.splice(0).forEach(fn => { try { fn(m3); } catch(e){ console.error(e); } });
+    });
+    m3.on('error', e => { if(e && e.error) console.warn('3D view:', e.error.message || e.error); });
+    m3.on('pitch', ()=>{ const p = Math.round(m3.getPitch()); tiltIn.value = p; tiltV.textContent = p + '\u00b0'; });
+    m3.on('click', onClick3d);
+    m3.on('dblclick', e=>{ if(measureMode && !measureDone){ e.preventDefault(); measureFinish(); } });
+    m3.on('mousemove', onMove3d);
+    m3.on('move', ()=>{ syncRightCamera(); if(window.positionPhotoFloat) window.positionPhotoFloat(); });
+    m3.on('moveend', ()=>{ if(window.ggCoordShow) window.ggCoordShow(); });
+    m3.on('resize', ()=>{ if(m3r) m3r.resize(); if(sw3) clip3d(); });
+    m3.getCanvas().addEventListener('mouseleave', ()=>{ if(pinTip) pinTip.remove(); });
+  }
+
+  /* ----- mirror of the 2D layers onto a 3D map (one per 3D map: the main one and the swipe one) ----- */
+  const MINE_SIZE = ['interpolate', ['linear'], ['zoom'], 6, 0.39, 7, 0.5, 8, 0.61, 9, 0.72, 10, 0.83, 11, 1];
+  const paneOf = l => l.options.pane || 'overlayPane';
+  const paneZ = p => { if(p === 'swcmp') return 262; const el = map.getPane(p); return el ? (parseFloat(el.style.zIndex) || 400) : 400; };
+  function mineIcon(color){
+    const r = 2, h = 9, c = document.createElement('canvas'); c.width = c.height = 18 * r;
+    const ctx = c.getContext('2d'); ctx.scale(r, r);
+    const x = 9, y = 9, k = h;
+    ctx.beginPath(); ctx.moveTo(x, y - h); ctx.lineTo(x + h, y); ctx.lineTo(x, y + h); ctx.lineTo(x - h, y); ctx.closePath();
+    ctx.fillStyle = color; ctx.fill();
+    ctx.lineWidth = Math.max(0.8, h * 0.12); ctx.strokeStyle = '#1a1a1a'; ctx.lineJoin = 'round'; ctx.stroke();
+    ctx.strokeStyle = '#141414'; ctx.lineCap = 'round'; ctx.lineWidth = Math.max(1, k * 0.17);
+    ctx.beginPath();
+    ctx.moveTo(x - 0.36*k, y + 0.36*k); ctx.lineTo(x + 0.26*k, y - 0.26*k);
+    ctx.moveTo(x + 0.36*k, y + 0.36*k); ctx.lineTo(x - 0.26*k, y - 0.26*k);
+    ctx.stroke();
+    ctx.lineWidth = Math.max(1.2, k * 0.2); ctx.lineCap = 'butt';
+    ctx.beginPath();
+    ctx.moveTo(x + 0.30*k - 0.22*k, y - 0.30*k - 0.22*k); ctx.lineTo(x + 0.30*k + 0.22*k, y - 0.30*k + 0.22*k);
+    ctx.moveTo(x - 0.30*k - 0.22*k, y - 0.30*k + 0.22*k); ctx.lineTo(x - 0.30*k + 0.22*k, y - 0.30*k - 0.22*k);
+    ctx.stroke();
+    return {img: ctx.getImageData(0, 0, c.width, c.height), r};
+  }
+  function tileTemplate(l){
+    const u = l._url;
+    if(typeof u !== 'string' || u.indexOf('{-y}') >= 0) return null;
+    const sd = l.options.subdomains, s0 = typeof sd === 'string' ? sd.charAt(0) : (sd && sd[0]) || '';
+    return u.replace(/\{(\w+)\}/g, (m, k) => (k === 'x' || k === 'y' || k === 'z') ? m : k === 's' ? s0 : k === 'r' ? ''
+                                             : (l.options[k] != null ? l.options[k] : m));
+  }
+  /* claim outlines over satellite imagery in 3D: brighter, more saturated versions of each site's
+     colour (same hue family, so sites stay recognisable), chosen to stay apart from one another
+     and to read against desert imagery. Fills keep the site colours; only the outlines change. */
+  const BRIGHT_CLAIM_LINES = {
+    'Gold Rooster':     '#2ef2e0',   // teal      (was #3f8e91)
+    'Lower Flats':      '#8cff3c',   // green     (was #7a9b52)
+    'Bullhouse':        '#ffd21f',   // gold      (was #d1a125)
+    'Burro Basin':      '#ff7a33',   // orange    (was #a8572f)
+    'Bear Mountain':    '#c99cff',   // violet    (was #8f6bc4)
+    'Blacksmith':       '#ff4f4f',   // red       (was #d15c55)
+    'Columbus':         '#3fa2ff',   // blue      (was #5089c9)
+    'Simon Wash':       '#66e3ff',   // sky       (was #3390c4)
+    'Tuttle Mountains': '#ff4fae',   // pink      (was #a13e6b)
+    'Proposed':         '#ffa04d'    // orange, dashed (was #ff8a3d)
+  };
+  const brightLines = () => base3 === 'satellite';
+  const lineColorExpr = () => brightLines() ? ['get','bc'] : ['get','c'];
+  function claimSiteOf(l){
+    if(l._v3site === undefined){
+      l._v3site = (paneOf(l) === 'claimsPane' && Object.keys(claimLayers).find(s => claimLayers[s].hasLayer(l))) || null;
+    }
+    return l._v3site;
+  }
+  const MIRRORS = [];
+  function applyLineColors(){ MIRRORS.forEach(mr => mr.lineColors()); }
+  function makeMirror(mm){
+    const paneState = {}, rasIds = {}, ids = [];
+    function ensureMine(color){
+      const id = 'mine-' + color;
+      if(!mm.hasImage(id)){ const m = mineIcon(color); mm.addImage(id, m.img, {pixelRatio: m.r}); }
+      return id;
+    }
+    function ensurePane(p){
+      const sid = 'mir-' + p;
+      if(mm.getSource(sid)) return sid;
+      const z = paneZ(p);
+      const higher = Object.keys(paneState).filter(q => paneState[q].z > z).sort((a, b) => paneState[a].z - paneState[b].z)[0];
+      const before = higher ? 'mir-' + higher + '-fill' : 'photo-pins';
+      mm.addSource(sid, {type:'geojson', data: EMPTY});
+      const notPt = ['all', ['!=', ['get','k'], 'pt'], ['!=', ['get','k'], 'mine'], ['==', ['get','s'], 1]];
+      const linePaint = {'line-color': lineColorExpr(), 'line-width':['get','w'], 'line-opacity':['get','op']};
+      [
+        {id: sid + '-fill', type:'fill', filter:['all', ['==', ['get','k'], 'poly'], ['==', ['get','f'], 1]],
+         paint:{'fill-color':['get','fc'], 'fill-opacity':['get','fo']}},
+        {id: sid + '-line', type:'line', filter: notPt.concat([['==', ['get','d'], '']]),
+         layout:{'line-join':'round', 'line-cap':'round'}, paint: linePaint},
+        {id: sid + '-dash', type:'line', filter: notPt.concat([['==', ['get','d'], 'dash']]),
+         layout:{'line-join':'round'}, paint: Object.assign({'line-dasharray':[3, 2]}, linePaint)},
+        {id: sid + '-dot', type:'line', filter: notPt.concat([['==', ['get','d'], 'dot']]),
+         layout:{'line-join':'round'}, paint: Object.assign({'line-dasharray':[0.8, 2]}, linePaint)},
+        {id: sid + '-pt', type:'circle', filter:['==', ['get','k'], 'pt'],
+         paint:{'circle-radius':['get','r'], 'circle-color':['get','fc'], 'circle-opacity':['*', ['get','f'], ['get','fo']],
+                'circle-stroke-color':['get','c'], 'circle-stroke-width':['*', ['get','s'], ['get','w']], 'circle-stroke-opacity':['get','op']}},
+        {id: sid + '-mine', type:'symbol', filter:['==', ['get','k'], 'mine'],
+         layout:{'icon-image':['get','icon'], 'icon-size': MINE_SIZE, 'icon-allow-overlap':true, 'icon-ignore-placement':true},
+         paint:{'icon-opacity':['get','fo']}}
+      ].forEach(def => { def.source = sid; mm.addLayer(def, mm.getLayer(before) ? before : undefined); ids.push(def.id); });
+      paneState[p] = {z, sig:''};
+      return sid;
+    }
+    function pathFeature(l){
+      if(l._v3g === undefined){ try { l._v3g = l.toGeoJSON(6).geometry; } catch(e){ l._v3g = null; } }
+      if(!l._v3g) return null;
+      const o = l.options, lo = l._lyrOpacity == null ? 1 : l._lyrOpacity;
+      const k = l instanceof MineMarker ? 'mine' : l instanceof L.CircleMarker ? 'pt' : l instanceof L.Polygon ? 'poly' : 'line';
+      const c = o.color || '#3388ff';
+      const fill = o.fill == null ? k !== 'line' : !!o.fill;
+      const pr = {k, s: o.stroke === false ? 0 : 1, c, w: o.weight == null ? 3 : o.weight,
+                  op: (o.opacity == null ? 1 : o.opacity) * lo, f: fill ? 1 : 0, fc: o.fillColor || c,
+                  fo: (o.fillOpacity == null ? 0.2 : o.fillOpacity) * lo, r: o.radius == null ? 10 : o.radius, d:''};
+      const site = claimSiteOf(l);
+      pr.bc = (site && BRIGHT_CLAIM_LINES[site]) || c;
+      if(k === 'mine'){ pr.icon = ensureMine(pr.fc); pr.fo = lo; }
+      if(o.dashArray){ const n = String(o.dashArray).split(/[\s,]+/).map(Number); pr.d = n[0] <= 3 ? 'dot' : 'dash'; }
+      return {type:'Feature', geometry: l._v3g, properties: pr};
+    }
+    function setPane(p, list, force){
+      ensurePane(p);
+      const sig = list.length + ':' + list.reduce((a, l) => a + L.stamp(l), 0);
+      if(!force && sig === paneState[p].sig) return;
+      paneState[p].sig = sig;
+      const feats = []; list.forEach(l => { const f = pathFeature(l); if(f) feats.push(f); });
+      mm.getSource('mir-' + p).setData({type:'FeatureCollection', features: feats});
+    }
+    function syncVectors(byPane, force){
+      Object.keys(byPane).forEach(ensurePane);
+      Object.keys(paneState).forEach(p => { if(p !== 'swcmp') setPane(p, byPane[p] || [], force); });
+    }
+    function addRaster(l, sid){
+      const op = l.options.opacity == null ? 1 : l.options.opacity;
+      if(mm.getSource(sid)){ mm.setPaintProperty(sid, 'raster-opacity', op); return true; }
+      let url = tileTemplate(l); if(!url) return false;
+      const id = L.stamp(l);
+      if(l instanceof WhiteKeyTileLayer){ WK[id] = l; url = 'ggwk://' + id + '/' + url; }
+      const ts = l.getTileSize ? l.getTileSize().x : 256;
+      const src = {type:'raster', tiles:[url], tileSize: ts,
+                   maxzoom: Math.min(22, l.options.maxNativeZoom != null ? l.options.maxNativeZoom : (l.options.maxZoom || 19)),
+                   minzoom: l.options.minNativeZoom || 0};
+      if(l.options.bounds){ const b = L.latLngBounds(l.options.bounds); src.bounds = [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()]; }
+      if(l.options.attribution) src.attribution = String(l.options.attribution);
+      mm.addSource(sid, src);
+      mm.addLayer({id: sid, type:'raster', source: sid, paint:{'raster-opacity': op}}, 'v3-anchor');
+      return true;
+    }
+    function dropRaster(sid){ if(mm.getLayer(sid)) mm.removeLayer(sid); if(mm.getSource(sid)) mm.removeSource(sid); }
+    function syncRasters(list){
+      const want = {};
+      list.forEach(l => { const sid = 'ras-' + L.stamp(l); want[sid] = true; if(addRaster(l, sid)) rasIds[sid] = true; });
+      Object.keys(rasIds).forEach(sid => { if(!want[sid]){ dropRaster(sid); delete rasIds[sid]; } });
+    }
+    /* swipe compare content for this map's side (pane 'swcmp' at the 2D swipe panes' depth) */
+    let swRas = [];
+    function setSwipe(layer){
+      swRas.forEach(dropRaster); swRas = [];
+      const paths = [];
+      if(layer){
+        (function walk(l){
+          if(l instanceof L.LayerGroup){ l.eachLayer(walk); return; }
+          if(l instanceof L.TileLayer){ const sid = 'swr-' + L.stamp(l); if(addRaster(l, sid)) swRas.push(sid); return; }
+          if(l instanceof L.Path) paths.push(l);
+        })(layer);
+      }
+      if(paths.length || paneState.swcmp) setPane('swcmp', paths, true);
+    }
+    function lineColors(){
+      ids.forEach(id => { if(/-(line|dash|dot)$/.test(id) && mm.getLayer(id)) mm.setPaintProperty(id, 'line-color', lineColorExpr()); });
+    }
+    const api = {ids, syncVectors, syncRasters, setSwipe, lineColors};
+    MIRRORS.push(api);
+    return api;
+  }
+  let mirL = null, mirR = null;
+
+  /* ----- markers: cloned from the 2D DOM (icon + permanent label) ----- */
+  const mk3 = {};
+  function cloneMarker(l){
+    const src = l.getElement && l.getElement(); if(!src) return null;
+    const el = document.createElement('div'); el.className = 'v3-lm';
+    const ic = src.cloneNode(true);
+    ic.removeAttribute('tabindex');
+    ic.style.transform = ''; ic.style.position = 'absolute'; ic.style.left = '0'; ic.style.top = '0'; ic.style.zIndex = '';
+    el.appendChild(ic);
+    const tt = l.getTooltip && l.getTooltip();
+    if(tt && tt.options.permanent){
+      const te = tt.getElement && tt.getElement();
+      const txt = te ? te.textContent.trim() : '';
+      if(txt){ const lab = document.createElement('div'); lab.className = 'v3-lab'; lab.textContent = txt; el.appendChild(lab); }
+    }
+    const ll = l.getLatLng();
+    el.addEventListener('mousedown', e => e.stopPropagation());
+    el.addEventListener('click', e => { e.stopPropagation(); open3dAt({lng: ll.lng, lat: ll.lat}, l); });
+    return new maplibregl.Marker({element: el, anchor:'top-left'}).setLngLat([ll.lng, ll.lat]).addTo(m3);
+  }
+  function syncMarkers(list, force){
+    const want = {};
+    list.forEach(l=>{
+      const id = L.stamp(l); want[id] = true;
+      if(force && mk3[id]){ mk3[id].remove(); delete mk3[id]; }
+      if(!mk3[id]){ const m = cloneMarker(l); if(m) mk3[id] = m; }
+    });
+    Object.keys(mk3).forEach(id => { if(!want[id]){ mk3[id].remove(); delete mk3[id]; } });
+  }
+
+  /* ----- field photos as thin pins staked on the ground ----- */
+  let pinTip = null, photoOn = [], pendingSel;
+  function pinImage(headR, h, head){
+    const r = 2, w = headR * 2 + 4, c = document.createElement('canvas');
+    c.width = w * r; c.height = h * r;
+    const g = c.getContext('2d'); g.scale(r, r);
+    const x = w / 2;
+    g.lineCap = 'round';
+    g.strokeStyle = 'rgba(8,12,18,0.85)'; g.lineWidth = 3;                 // dark edge so the stake reads on bright imagery
+    g.beginPath(); g.moveTo(x, headR + 2); g.lineTo(x, h - 1); g.stroke();
+    g.strokeStyle = '#f2f2f2'; g.lineWidth = 1.2;                           // the stake
+    g.beginPath(); g.moveTo(x, headR + 2); g.lineTo(x, h - 1); g.stroke();
+    g.fillStyle = head; g.strokeStyle = '#0b1018'; g.lineWidth = 1.4;       // the head
+    g.beginPath(); g.arc(x, headR + 2, headR, 0, Math.PI * 2); g.fill(); g.stroke();
+    return {img: g.getImageData(0, 0, c.width, c.height), r};
+  }
+  const photoFilter = () => ['in', ['get','site'], ['literal', photoOn]];
+  let selNow = null;
+  function addPhotoPins(mm){
+    const a = pinImage(3.2, 24, '#ffffff'), b = pinImage(5, 34, '#f2c14e');
+    mm.addImage('v3-pin', a.img, {pixelRatio: a.r});
+    mm.addImage('v3-pin-sel', b.img, {pixelRatio: b.r});
+    const feats = [];
+    Object.keys(FIELD_PHOTOS).forEach(site => FIELD_PHOTOS[site].forEach((ph, idx) => feats.push({
+      type:'Feature', geometry:{type:'Point', coordinates:[ph.lo, ph.la]}, properties:{site, idx, n: ph.n}})));
+    mm.addSource('photos', {type:'geojson', data:{type:'FeatureCollection', features: feats}});
+    const lay = img => ({'icon-image': img, 'icon-anchor':'bottom', 'icon-allow-overlap': true, 'icon-ignore-placement': true,
+                         'icon-pitch-alignment':'viewport', 'icon-rotation-alignment':'viewport'});
+    mm.addLayer({id:'photo-pins', type:'symbol', source:'photos', filter: photoFilter(), layout: lay('v3-pin')});
+    mm.addLayer({id:'photo-sel',  type:'symbol', source:'photos', filter: selFilter(), layout: lay('v3-pin-sel')});
+    if(mm !== m3) return;
+    pinTip = new maplibregl.Popup({closeButton:false, closeOnClick:false, offset:[0, -26], className:'v3-tip'});
+    if(pendingSel !== undefined){ const p = pendingSel; pendingSel = undefined; v3PhotoSelected.apply(null, p || [null]); }
+  }
+  const selFilter = () => selNow ? ['all', ['==', ['get','site'], selNow.site], ['==', ['get','idx'], selNow.idx]] : ['==', ['get','idx'], -1];
+  function queryPins(pt){
+    if(!m3.getLayer('photo-pins') || !photoOn.length) return null;
+    const box = [[pt.x - 4, pt.y - 4], [pt.x + 4, pt.y + 2]];
+    return m3.queryRenderedFeatures(box, {layers:['photo-sel', 'photo-pins']})[0] || null;
+  }
+  function v3PhotoSelected(site, idx, pan){
+    if(!m3 || !loaded || !m3.getLayer('photo-sel')){ pendingSel = site ? [site, idx, pan] : null; return; }
+    selNow = site ? {site, idx} : null;
+    [m3, m3r].forEach(mm => { if(mm && mm.getLayer('photo-sel')) mm.setFilter('photo-sel', selFilter()); });
+    if(!site || !active) return;
+    const ph = FIELD_PHOTOS[site][idx];
+    if(pan){
+      const p = m3.project([ph.lo, ph.la]), c = m3.getCanvas(), w = c.clientWidth, h = c.clientHeight;
+      if(p.x < w * 0.1 || p.x > w * 0.9 || p.y < h * 0.35 || p.y > h * 0.92) m3.jumpTo({center:[ph.lo, ph.la]});
+    }
+  }
+  window.v3PhotoSelected = v3PhotoSelected;
+
+  /* ----- clicks: the 2D click index and popups, hit-tested in 3D ----- */
+  let pop3 = null;
+  /* the point hit tests in featureClickIndex measure pixels with map.latLngToContainerPoint;
+     for a 3D click that projection is swapped for the 3D one, only for the duration of the test */
+  function candidates3d(lngLat){
+    const orig = map.latLngToContainerPoint;
+    map.latLngToContainerPoint = ll => { ll = L.latLng(ll); const p = m3.project([ll.lng, ll.lat]); return L.point(p.x, p.y); };
+    try { return candidatesAt(L.latLng(lngLat.lat, lngLat.lng)); }
+    catch(e){ console.warn('3D hit test:', e); return []; }
+    finally { map.latLngToContainerPoint = orig; }
+  }
+  function leafletFrame(cls, inner){
+    const outer = document.createElement('div'); outer.className = 'leaflet-container v3-lwrap';
+    const pop = document.createElement('div'); pop.className = 'leaflet-popup ' + (cls || '');
+    const cw = document.createElement('div'); cw.className = 'leaflet-popup-content-wrapper';
+    const ct = document.createElement('div'); ct.className = 'leaflet-popup-content';
+    ct.appendChild(inner); cw.appendChild(ct); pop.appendChild(cw); outer.appendChild(pop);
+    return outer;
+  }
+  function show3dPopup(lngLat, node){
+    if(pop3) pop3.remove();
+    pop3 = new maplibregl.Popup({maxWidth:'360px', className:'v3-lpop', offset:8}).setLngLat(lngLat).setDOMContent(node).addTo(m3);
+  }
+  /* open a 2D popup on the hidden 2D map and move its content into a 3D popup */
+  function capturePopup(open){
+    let got = null;
+    const on = e => { got = e.popup; };
+    map.on('popupopen', on);
+    try { open(); } catch(e){ console.warn(e); }
+    map.off('popupopen', on);
+    if(!got) return null;
+    const frag = document.createElement('div');
+    const node = got._contentNode;
+    while(node && node.firstChild) frag.appendChild(node.firstChild);
+    const cls = got.options.className || '';
+    map.closePopup(got);
+    return frag.childNodes.length ? leafletFrame(cls, frag) : null;
+  }
+  /* a claim click also frames its project site (all of that site's claims), unless already framed */
+  function zoomToClaimSite(site){
+    const lyr = claimLayers[site]; if(!lyr || PROPOSED_SITES.has(site)) return;   // proposed claims span several areas
+    const b = lyr.getBounds(); if(!b.isValid()) return;
+    const bb = [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()];
+    const cam = m3.cameraForBounds([[bb[0], bb[1]], [bb[2], bb[3]]], {padding: camPad(), bearing: 0});
+    const c = m3.getCenter();
+    const framed = cam && Math.abs(m3.getZoom() - (cam.zoom - 0.25)) < 0.8 && b.pad(0.2).contains([c.lat, c.lng]);
+    if(!framed) flyToBounds(bb);
+    const st = Object.keys(AREAS).find(k => AREAS[k].sites[site]);
+    if(st){ markArea(st); projSel.value = site; }
+  }
+  function open3dEntry(c, lngLat){
+    const ll = L.latLng(lngLat.lat, lngLat.lng);
+    if(c.kind === 'claim' && c.group) zoomToClaimSite(c.group);
+    const node = capturePopup(() => c.select(ll));
+    if(node){ show3dPopup(lngLat, node); return; }
+    const d = document.createElement('div');
+    d.innerHTML = `<div class="popup-title">${esc(c.name)}</div><div class="popup-row"><span class="k">Layer</span><span class="v">${esc(c.group)}</span></div>`;
+    show3dPopup(lngLat, leafletFrame('', d));
+  }
+  function open3dChooser(cands, lngLat){
+    const el = document.createElement('div'); el.className = 'feat-chooser';
+    const t = document.createElement('div'); t.className = 'fc-title'; t.textContent = `${cands.length} features here, pick one`;
+    const list = document.createElement('div'); list.className = 'fc-list';
+    cands.forEach(c=>{
+      const row = document.createElement('div');
+      row.className = 'fc-item' + (c.kind === 'aoi' ? ' is-aoi' : '');
+      row.innerHTML = `<span class="fc-sw" style="background:${c.color}"></span><span class="fc-nm"></span><span class="fc-gp"></span>`;
+      row.querySelector('.fc-nm').textContent = c.name;
+      row.querySelector('.fc-gp').textContent = c.group;
+      row.addEventListener('click', ()=> open3dEntry(c, lngLat));
+      list.appendChild(row);
+    });
+    el.appendChild(t); el.appendChild(list);
+    show3dPopup(lngLat, leafletFrame('chooser-popup', el));
+  }
+  function open3dAt(lngLat, fallbackLayer){
+    const cands = candidates3d(lngLat);
+    if(cands.length === 1){ open3dEntry(cands[0], lngLat); return true; }
+    if(cands.length > 1){ open3dChooser(cands, lngLat); return true; }
+    if(fallbackLayer && fallbackLayer.getPopup && fallbackLayer.getPopup()){
+      const node = capturePopup(() => fallbackLayer.openPopup());
+      if(node){ show3dPopup(lngLat, node); return true; }
+    }
+    return false;
+  }
+  function onClick3d(e){
+    if(orbitMoved){ orbitMoved = false; return; }
+    if(measureMode && !measureDone){
+      const last = measurePts[measurePts.length - 1];
+      if(last){ const p = m3.project([last.lng, last.lat]); if(Math.hypot(p.x - e.point.x, p.y - e.point.y) < 3) return; }
+      measureAddVertex(L.latLng(e.lngLat.lat, e.lngLat.lng));
+      return;
+    }
+    const pin = queryPins(e.point);
+    if(pin){ selectPhoto(pin.properties.site, +pin.properties.idx, false); return; }
+    open3dAt(e.lngLat);
+  }
+  function onMove3d(e){
+    if(orbit || panDrag) return;
+    if(measureMode && !measureDone){ if(measurePts.length) measureRender(L.latLng(e.lngLat.lat, e.lngLat.lng)); return; }
+    const pin = queryPins(e.point);
+    if(pin){
+      pinTip.setLngLat(pin.geometry.coordinates).setHTML(`<b>${esc(pin.properties.n)}</b><small>${esc(pin.properties.site)} field photo</small>`).addTo(m3);
+      m3.getCanvas().style.cursor = 'pointer';
+      return;
+    }
+    if(pinTip) pinTip.remove();
+    const ids = mirL ? mirL.ids.filter(id => m3.getLayer(id)) : [];
+    m3.getCanvas().style.cursor = ids.length && m3.queryRenderedFeatures(e.point, {layers: ids}).length ? 'pointer' : '';
+  }
+
+  /* ----- mouse: left-drag tilts and rotates, middle-drag pans (Shift + left-drag pans too) ----- */
+  let orbit = null, orbitMoved = false, panDrag = null;
+  function orbitMove(e){
+    if(!orbit) return;
+    const dx = e.clientX - orbit.x, dy = e.clientY - orbit.y;
+    if(Math.abs(dx) + Math.abs(dy) > 3) orbitMoved = true;
+    m3.jumpTo({bearing: orbit.b + dx * 0.4, pitch: Math.max(0, Math.min(85, orbit.p - dy * 0.3))});
+  }
+  function orbitEnd(){
+    orbit = null;
+    window.removeEventListener('mousemove', orbitMove);
+    window.removeEventListener('mouseup', orbitEnd);
+    m3.dragPan.enable();
+  }
+  function panMove(e){
+    if(!panDrag) return;
+    const dx = e.clientX - panDrag.x, dy = e.clientY - panDrag.y;
+    panDrag.x = e.clientX; panDrag.y = e.clientY;
+    if(dx || dy) m3.panBy([-dx, -dy], {duration:0});
+  }
+  function panEnd(){
+    panDrag = null;
+    window.removeEventListener('mousemove', panMove);
+    window.removeEventListener('mouseup', panEnd);
+    box3d.classList.remove('panning');
+  }
+  function wireMouse(){
+    const cc = m3.getCanvasContainer();
+    /* capture phase on the canvas container, so the choice is made before MapLibre's own handlers */
+    cc.addEventListener('mousedown', e=>{
+      orbitMoved = false;
+      if(e.target.closest && e.target.closest('.v3-lm, .maplibregl-marker, .maplibregl-popup')) return;
+      if(e.button === 1){                                   // middle button: pan
+        e.preventDefault();
+        panDrag = {x: e.clientX, y: e.clientY};
+        box3d.classList.add('panning');
+        window.addEventListener('mousemove', panMove);
+        window.addEventListener('mouseup', panEnd);
+        return;
+      }
+      if(e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey) return;   // Shift + left: MapLibre's own pan
+      m3.dragPan.disable();                                 // left button: tilt and rotate
+      orbit = {x: e.clientX, y: e.clientY, b: m3.getBearing(), p: m3.getPitch()};
+      window.addEventListener('mousemove', orbitMove);
+      window.addEventListener('mouseup', orbitEnd);
+      e.preventDefault();
+    }, true);
+    cc.addEventListener('auxclick', e => { if(e.button === 1) e.preventDefault(); });
+  }
+
+  /* ----- measuring in 3D: the 2D measure state, drawn on the terrain ----- */
+  const measMarkers = [];
+  function addMeasureLayers(mm){
+    mm.addSource('meas', {type:'geojson', data: EMPTY});
+    mm.addLayer({id:'meas-fill', type:'fill', source:'meas', filter:['==', ['get','t'], 'poly'], paint:{'fill-color':'#d1a125', 'fill-opacity':0.18}});
+    mm.addLayer({id:'meas-line', type:'line', source:'meas', filter:['==', ['get','t'], 'line'], layout:{'line-join':'round', 'line-cap':'round'},
+                 paint:{'line-color':'#e8c05e', 'line-width':2.5}});
+    mm.addLayer({id:'meas-rub', type:'line', source:'meas', filter:['==', ['get','t'], 'rub'],
+                 paint:{'line-color':'#e8c05e', 'line-width':1.8, 'line-opacity':0.9, 'line-dasharray':[2.5, 2.5]}});
+    mm.addLayer({id:'meas-pt', type:'circle', source:'meas', filter:['==', ['get','t'], 'pt'],
+                 paint:{'circle-radius':4, 'circle-color':'#0f1f2a', 'circle-stroke-color':'#e8c05e', 'circle-stroke-width':2}});
+  }
+  function measLabel(lngLat, cls, txt, anchor){
+    const el = document.createElement('div');
+    el.className = 'v3-mlab ' + cls;
+    el.textContent = txt;
+    measMarkers.push(new maplibregl.Marker({element: el, anchor: anchor || 'center', offset: anchor === 'left' ? [10, 0] : [0, 0]}).setLngLat(lngLat).addTo(m3));
+  }
+  function drawMeasure3d(cursor){
+    if(!m3 || !loaded) return;
+    measMarkers.splice(0).forEach(m => m.remove());
+    box3d.classList.toggle('measuring', !!measureMode && !measureDone);
+    const isArea = (measureMode || measurePaused) === 'area' || (!measureMode && measureLine instanceof L.Polygon);
+    const pts = measurePts.map(p => [p.lng, p.lat]);
+    const feats = pts.map(c => ({type:'Feature', properties:{t:'pt'}, geometry:{type:'Point', coordinates:c}}));
+    if(isArea && measureDone && pts.length > 2){
+      feats.push({type:'Feature', properties:{t:'poly'}, geometry:{type:'Polygon', coordinates:[pts.concat([pts[0]])]}});
+      feats.push({type:'Feature', properties:{t:'line'}, geometry:{type:'LineString', coordinates:pts.concat([pts[0]])}});
+    } else if(pts.length >= 2){
+      feats.push({type:'Feature', properties:{t:'line'}, geometry:{type:'LineString', coordinates:pts}});
+    }
+    const cur = cursor && !measureDone && pts.length ? [cursor.lng, cursor.lat] : null;
+    if(cur){
+      const r = isArea && pts.length >= 2 ? [pts[pts.length-1], cur, pts[0]] : [pts[pts.length-1], cur];
+      feats.push({type:'Feature', properties:{t:'rub'}, geometry:{type:'LineString', coordinates:r}});
+    }
+    [m3, sw3 ? m3r : null].forEach(mm => { if(mm && mm.getSource('meas')) mm.getSource('meas').setData({type:'FeatureCollection', features: feats}); });
+    /* labels, as in 2D: segment lengths on the line tool, the running total / area at the end */
+    if(!isArea){
+      for(let i = 1; i < measurePts.length; i++){
+        const a = measurePts[i-1], b = measurePts[i];
+        measLabel([(a.lng + b.lng) / 2, (a.lat + b.lat) / 2], 'measure-seg', fmtLen(map.distance(a, b)));
+      }
+    }
+    const live = cur ? measurePts.concat([cursor]) : measurePts.slice();
+    let txt = '';
+    if(isArea){ if(live.length > 2) txt = fmtArea(geodesicArea(live))[0]; }
+    else if(live.length > 1) txt = fmtLen(pathLength(live, false));
+    if(txt){
+      if(isArea && measureDone){
+        const bb = L.latLngBounds(measurePts).getCenter();
+        measLabel([bb.lng, bb.lat], 'measure-label', txt);
+      } else {
+        const at = live[live.length - 1];
+        measLabel([at.lng, at.lat], 'measure-label', txt, 'left');
+      }
+    }
+  }
+  /* every 2D measure redraw also redraws the 3D copy */
+  const _measureRender = measureRender;
+  measureRender = function(cursor){ _measureRender(cursor); if(active) drawMeasure3d(cursor); };
+  const _measurePause = measurePause;
+  measurePause = function(){ _measurePause(); if(active) drawMeasure3d(); };
+  const _measureStop = measureStop;
+  measureStop = function(clear){ _measureStop(clear); if(active) drawMeasure3d(); };
+
+  /* ----- swipe compare in 3D: a camera-locked second 3D map for the right-hand side ----- */
+  let m3r = null, m3rReady = false, sw3 = false;
+  function syncRightCamera(){
+    if(!m3r || !sw3) return;
+    m3r.jumpTo({center: m3.getCenter(), zoom: m3.getZoom(), bearing: m3.getBearing(), pitch: m3.getPitch()});
+  }
+  function ensureRight(cb){
+    if(m3rReady){ cb(); return; }
+    if(m3r){ m3r.once('load', cb); return; }
+    m3r = new maplibregl.Map({container: boxR, style: baseStyle(), interactive:false, attributionControl:false,
+                              center: m3.getCenter(), zoom: m3.getZoom(), bearing: m3.getBearing(), pitch: m3.getPitch(), maxPitch:85});
+    m3r.on('load', ()=>{
+      m3r.setTerrain({source:'dem', exaggeration: +exagIn.value});
+      try { m3r.setSky(SKY); } catch(e){}
+      addPhotoPins(m3r);
+      mirR = makeMirror(m3r);
+      addMeasureLayers(m3r);
+      Object.keys(BASES).forEach(x => m3r.setLayoutProperty('base-' + x, 'visibility', x === base3 ? 'visible' : 'none'));
+      m3rReady = true;
+      cb();
+    });
+  }
+  function clip3d(){
+    const c = m3.getCanvas(), w = c.clientWidth;
+    const x = swipeX == null ? Math.round(w / 2) : Math.max(0, Math.min(w, swipeX));
+    c.style.clipPath = `inset(0 ${w - x}px 0 0)`;
+  }
+  function sw3Build(){
+    if(!active || !swipeActive || !m3 || !loaded) return;
+    ensureRight(()=>{
+      if(!active || !swipeActive) return;
+      sw3 = true;
+      wrap.classList.add('sw3d');
+      m3r.resize();
+      syncRightCamera();
+      ['left','right'].forEach(side=>{
+        const src = SWIPE_SOURCES.find(x => x.id === swipeSel[side].value);
+        let lay = null;
+        try { lay = src ? src.make(side) : null; } catch(e){ console.warn('3D swipe:', e); }
+        (side === 'left' ? mirL : mirR).setSwipe(lay);
+      });
+      syncAll(true, false);
+      drawMeasure3d();
+      clip3d();
+    });
+  }
+  function sw3Stop(){
+    sw3 = false;
+    wrap.classList.remove('sw3d');
+    if(m3){ m3.getCanvas().style.clipPath = ''; if(mirL) mirL.setSwipe(null); }
+    if(mirR) mirR.setSwipe(null);
+  }
+  const _swipeBuild = swipeBuild;
+  swipeBuild = function(){ _swipeBuild(); if(active) sw3Build(); };
+  const _swipeStop = swipeStop;
+  swipeStop = function(){ _swipeStop(); if(active) sw3Stop(); };
+  const _swipeClip = swipeClip;
+  swipeClip = function(){ _swipeClip(); if(active && sw3) clip3d(); };
+
+  /* ----- keep 3D in step with the 2D map ----- */
+  function setBase(k){
+    if(!BASES[k]) return;
+    base3 = k; baseSel.value = k;
+    wrap.classList.toggle('v3-dark', k === 'satellite');   // white readout / scale over imagery, as in 2D
+    applyLineColors();                                       // bright claim outlines over satellite
+    if(!m3) return;
+    [m3, m3r].forEach(mm => { if(mm) Object.keys(BASES).forEach(x => { if(mm.getLayer('base-' + x)) mm.setLayoutProperty('base-' + x, 'visibility', x === k ? 'visible' : 'none'); }); });
+  }
+  function current2dBase(){ return Object.keys(basemaps).find(k => map.hasLayer(basemaps[k])) || null; }
+  function collect(){
+    const byPane = {}, rasters = [], markers = [];
+    const baseSet = new Set(Object.values(basemaps));
+    map.eachLayer(l=>{
+      const pane = paneOf(l);
+      if(pane.indexOf('swipe') === 0) return;
+      if(l instanceof L.TileLayer){ if(!baseSet.has(l) && !(swipeActive && pane === 'hyperspectralPane')) rasters.push(l); return; }
+      if(l instanceof L.Marker){ if(!(typeof measureGroup !== 'undefined' && measureGroup.hasLayer(l))) markers.push(l); return; }
+      if(l instanceof L.Path){ if(!SKIP_PANES.has(pane)) (byPane[pane] = byPane[pane] || []).push(l); }
+    });
+    return {byPane, rasters, markers};
+  }
+  function syncAll(force, fromToggle){
+    if(!m3 || !loaded) return;
+    const c = collect();
+    [mirL, sw3 ? mirR : null].forEach(mr=>{
+      if(!mr) return;
+      try { mr.syncRasters(c.rasters); } catch(e){ console.warn('3D rasters:', e); }
+      try { mr.syncVectors(c.byPane, force); } catch(e){ console.warn('3D vectors:', e); }
+    });
+    try { syncMarkers(c.markers, force); } catch(e){ console.warn('3D markers:', e); }
+    box3d.classList.toggle('points-hidden', map.getContainer().classList.contains('points-hidden'));
+    const on = Object.keys(photoLayers).filter(s => map.hasLayer(photoLayers[s].group));
+    photoOn = on;
+    [m3, m3r].forEach(mm => { if(mm && mm.getLayer('photo-pins')) mm.setFilter('photo-pins', photoFilter()); });
+    const b2 = current2dBase();
+    if(b2 && b2 !== last2dBase){ last2dBase = b2; setBase(b2); }
+  }
+  let syncTimer = null;
+  map.on('layeradd layerremove', ()=>{
+    if(!active) return;
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(()=> syncAll(false, true), 60);
+  });
+
+  /* ----- camera helpers ----- */
+  const camPad = () => ({top: bar.offsetHeight + 40, bottom:50, left:60, right:60});
+  function flyToBounds(b, opts){
+    if(!m3 || !b) return;
+    const cam = m3.cameraForBounds([[b[0], b[1]], [b[2], b[3]]], {padding: camPad(), bearing: 0});
+    if(!cam) return;
+    const z = Math.min((cam.zoom || 10) - 0.25, 15.5);
+    m3.flyTo(Object.assign({center: cam.center, zoom: z, pitch: +tiltIn.value, bearing: 0, duration: 1800, essential: true}, opts || {}));
+  }
+  function flyToArea(st){
+    if(!AREAS[st] || !AREAS[st].b) return;
+    markArea(st); projSel.value = '';
+    flyToBounds(AREAS[st].b);
+  }
+  function flyToProject(name){
+    const b = SITE_BOUNDS[name]; if(!b) return;
+    const st = Object.keys(AREAS).find(k => AREAS[k].sites[name]); if(st) markArea(st);
+    projSel.value = name;
+    flyToBounds(b);
+  }
+
+  /* toolbar height drives where the zoom / compass group sits */
+  const placeNav = () => wrap.style.setProperty('--v3-top', (bar.offsetHeight + 16) + 'px');
+  if(window.ResizeObserver) new ResizeObserver(placeNav).observe(bar);
+
+  /* ----- enter / leave ----- */
+  function enter(){
+    active = true;
+    wrap.classList.add('is-3d');
+    btn3d.classList.add('active'); btn3d.setAttribute('aria-pressed', 'true');
+    if(typeof positionPhotoFloat === 'function') positionPhotoFloat();   // hidden until the 3D map can place it
+    placeNav();
+    const c = map.getCenter(), z2 = map.getZoom();
+    const inArea = z2 >= 7 ? areaAt(c.lng, c.lat) : null;
+    const target = inArea || nearestArea(c.lng, c.lat);
+    markArea(target);
+    if(!last2dBase){ const b2 = current2dBase(); if(b2){ last2dBase = b2; base3 = b2; } }
+    if(!m3) showStatus('Loading 3D view\u2026');
+    loadLib().then(()=>{
+      if(!active) return;
+      if(!m3){
+        buildMap([c.lng, c.lat], Math.max(z2 - 1, 2));
+        const go = () => { if(!inArea) flyToArea(target); after3dReady(); };
+        if(loaded) go(); else readyQ.push(go);
+      } else {
+        m3.resize();
+        syncAll(true, false);
+        if(inArea) m3.jumpTo({center:[c.lng, c.lat], zoom: Math.max(z2 - 1, 2), pitch: +tiltIn.value, bearing: 0});
+        else flyToArea(target);
+        after3dReady();
+      }
+      setBase(base3);
+    }).catch(()=>{
+      showStatus('The 3D view could not load. Check the internet connection, then try again.', true);
+    });
+  }
+  /* tools already running when 3D opens carry straight on in 3D */
+  function after3dReady(){
+    drawMeasure3d();
+    if(swipeActive) sw3Build();
+    if(photoSel) v3PhotoSelected(photoSel.site, photoSel.idx, false);
+    if(typeof positionPhotoFloat === 'function') positionPhotoFloat();
+  }
+  function leave(){
+    if(!active) return;
+    active = false;
+    hideStatus();
+    if(pop3){ pop3.remove(); pop3 = null; }
+    measMarkers.splice(0).forEach(m => m.remove());
+    sw3Stop();
+    wrap.classList.remove('is-3d', 'v3-dark');
+    btn3d.classList.remove('active'); btn3d.setAttribute('aria-pressed', 'false');
+    map.invalidateSize();
+    if(m3 && loaded){
+      const c = m3.getCenter();
+      map.setView([c.lat, c.lng], Math.max(3, Math.min(18, Math.round(m3.getZoom() + 1))), {animate:false});
+    }
+    if(swipeActive) swipeClip();
+    if(typeof positionPhotoFloat === 'function') positionPhotoFloat();   // the open photo card re-places itself on the 2D map
+  }
+  /* coordinate readout: cursor and center positions from the 3D camera while 3D is open */
+  window.ggCoordAt = (x, y) => {
+    if(!active || !m3 || !loaded) return null;
+    const ll = m3.unproject([x, y]);
+    return (ll && isFinite(ll.lat) && isFinite(ll.lng)) ? L.latLng(ll.lat, ll.lng) : null;
+  };
+  window.ggCoordCenter = () => { if(!active || !m3 || !loaded) return null; const c = m3.getCenter(); return L.latLng(c.lat, c.lng); };
+  window.v3Set = on => { if(on && !active) enter(); else if(!on && active) leave(); };
+  btn3d.addEventListener('click', ()=> window.v3Set(!active));
+  L.DomEvent.disableClickPropagation(btn3d);
+
+  /* ----- toolbar controls ----- */
+  document.querySelectorAll('#v3-areas button').forEach(b => b.addEventListener('click', ()=> flyToArea(b.dataset.area)));
+  projSel.addEventListener('change', ()=>{ if(projSel.value) flyToProject(projSel.value); });
+  tiltIn.addEventListener('input', ()=>{ tiltV.textContent = tiltIn.value + '\u00b0'; if(m3) m3.easeTo({pitch:+tiltIn.value, duration:0}); });
+  exagIn.addEventListener('input', ()=>{
+    const v = (+exagIn.value).toFixed(1); exagV.textContent = v + '\u00d7';
+    if(m3 && loaded) m3.setTerrain({source:'dem', exaggeration:+v});
+    if(m3rReady) m3r.setTerrain({source:'dem', exaggeration:+v});
+  });
+  baseSel.addEventListener('change', ()=> setBase(baseSel.value));
+  document.getElementById('v3-north').addEventListener('click', ()=>{ if(m3) m3.easeTo({bearing:0, duration:600}); });
+  document.getElementById('v3-flat').addEventListener('click', ()=>{ if(m3) m3.easeTo({bearing:0, pitch:0, duration:600}); });
+  document.getElementById('v3-exit').addEventListener('click', ()=> window.v3Set(false));
+  document.getElementById('v3-x').addEventListener('click', ()=> window.v3Set(false));
+  document.addEventListener('keydown', e=>{
+    if(e.key !== 'Escape' || !active) return;
+    if(e.target && e.target.closest && e.target.closest('input, select, textarea')) return;
+    const cp = document.getElementById('cine-player');
+    if(cp && !cp.hidden && cp.classList.contains('full')) return;   // Esc belongs to the video player first
+    if(mtOpen || swipeActive || measureMode) return;                 // Esc belongs to the busy tool (cancel / exit swipe)
+    if(pop3 && pop3.isOpen()){ pop3.remove(); return; }               // then it closes an open popup
+    if(typeof photoFloat !== 'undefined' && photoFloat.open){ hidePhotoFloat(); return; }
+    window.v3Set(false);
+  });
+
+  /* ----- Overlays menu (geophysics + hyperspectral grids), the same overlays as the Basemap tab ----- */
+  (function overlaysMenu(){
+    const btn = document.getElementById('v3-ov-btn'), pop = document.getElementById('v3-ov-pop');
+    const api = window.ggOverlays;
+    if(!api || !api.list.length){ btn.closest('.v3-g').style.display = 'none'; return; }
+    const rows = [];
+    let grp = null;
+    api.list.forEach(ov=>{
+      if(ov.group !== grp){ grp = ov.group; const h = document.createElement('div'); h.className = 'op-grp'; h.textContent = grp; pop.appendChild(h); }
+      const r = document.createElement('div'); r.className = 'op-row';
+      r.innerHTML = `<label><input type="checkbox"/><span></span></label><div class="op-sl"><input type="range" min="0" max="100" step="1"/><span></span></div>`;
+      r.querySelector('label span').textContent = ov.label;
+      const cb = r.querySelector('input[type=checkbox]'), rng = r.querySelector('input[type=range]'), val = r.querySelector('.op-sl span');
+      cb.setAttribute('aria-label', 'Overlay ' + ov.label); rng.setAttribute('aria-label', ov.label + ' opacity');
+      cb.addEventListener('change', ()=> api.setOn(ov, cb.checked));
+      rng.addEventListener('input', ()=> api.setOpacity(ov, +rng.value));
+      rows.push({ov, r, cb, rng, val});
+      pop.appendChild(r);
+    });
+    function render(){
+      let n = 0;
+      rows.forEach(x=>{
+        x.cb.checked = x.ov.on; x.r.classList.toggle('on', x.ov.on);
+        if(document.activeElement !== x.rng) x.rng.value = x.ov.opacity;
+        x.val.textContent = x.ov.opacity + '%';
+        if(x.ov.on) n++;
+      });
+      btn.innerHTML = (n ? `${n} on` : 'None') + ' &#9662;';
+      btn.classList.toggle('has-on', n > 0);
+    }
+    const setOpen = on => { pop.hidden = !on; btn.setAttribute('aria-expanded', on ? 'true' : 'false'); };
+    btn.addEventListener('click', e => { e.stopPropagation(); setOpen(pop.hidden); });
+    document.addEventListener('mousedown', e => { if(!pop.hidden && !pop.contains(e.target) && e.target !== btn) setOpen(false); }, true);
+    document.addEventListener('keydown', e => { if(e.key === 'Escape' && !pop.hidden){ e.stopPropagation(); setOpen(false); btn.focus(); } }, true);
+    api.onChange(render);
+    render();
+  })();
+
+  /* 2D zoom actions (project tiles, layer tree zoom, photo sites, overlay Zoom to...) land on the 3D map while 3D is open */
+  const _fitBounds = map.fitBounds.bind(map);
+  map.fitBounds = function(bounds, opts){
+    if(!active || !m3 || !loaded) return _fitBounds(bounds, opts);
+    const b = L.latLngBounds(bounds);
+    if(b.isValid()) flyToBounds([b.getWest(), b.getSouth(), b.getEast(), b.getNorth()]);
+    return map;
+  };
+
+  /* ----- 3D data hooks (drill traces, DXF) ----- */
+  window.GG3D = {
+    get map(){ return m3; },
+    isActive: () => active,
+    areas: AREAS,
+    ready(fn){ if(m3 && loaded) fn(m3); else readyQ.push(fn); },
+    flyToArea, flyToProject,
+    list: () => Object.assign({}, userLayers),
+    /* screen point just above a photo pin's head, for the photo card; null until the 3D map is ready */
+    projectPhoto(lng, lat){ if(!m3 || !loaded) return null; const p = m3.project([lng, lat]); return {x: p.x, y: p.y - 30}; },
+    refresh(){ if(active) syncAll(false, false); },
+    fitBounds(b){ flyToBounds(b); },
+    /* addGeoJSON('dxf-pit', featureCollection, {label:'Pit design', kind:'DXF', color:'#ff0', width:2}) */
+    addGeoJSON(id, fc, o){
+      o = o || {};
+      this.ready(()=>{
+        const sid = 'user-' + id;
+        if(m3.getSource(sid)){ m3.getSource(sid).setData(fc); }
+        else {
+          m3.addSource(sid, {type:'geojson', data: fc});
+          m3.addLayer({id: sid + '-line', type:'line', source:sid, filter:['!=', ['geometry-type'], 'Point'],
+            paint:{'line-color': o.color || '#ffd23f', 'line-width': o.width || 2}});
+          m3.addLayer({id: sid + '-pt', type:'circle', source:sid, filter:['==', ['geometry-type'], 'Point'],
+            paint:{'circle-radius': 4, 'circle-color': o.color || '#ffd23f', 'circle-stroke-color':'#111', 'circle-stroke-width':1}});
+        }
+        userLayers[id] = {label: o.label || id, kind: o.kind || 'Layer'};
+      });
+    },
+    remove(id){
+      const sid = 'user-' + id;
+      if(m3){ ['-line','-pt'].forEach(s => { if(m3.getLayer(sid + s)) m3.removeLayer(sid + s); }); if(m3.getSource(sid)) m3.removeSource(sid); }
+      delete userLayers[id];
+    }
+  };
+})();
+
 </script>
 </body>
 </html>
